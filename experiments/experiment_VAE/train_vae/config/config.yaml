@@ -1,0 +1,25 @@
+hydra:
+  run:
+    dir: ./run_outputs/${hydra.job.override_dirname}
+  sweep:
+    dir: ./run_outputs/
+    subdir: ${hydra.job.override_dirname}
+  job:
+    config:
+      override_dirname:
+        exclude_keys:
+          - csv_file
+          - tensor_dir
+defaults:
+  - model: vae_resnet
+
+csv_file: files/short_clips.csv
+
+train_sources: all
+
+split: by_source
+
+dataset: spectrogram
+
+tensor_dir: /home/laia/AEdatasets/${.dataset}/
+
