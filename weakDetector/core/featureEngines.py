@@ -8,7 +8,7 @@ import numpy as np
 import warnings
 import torchvision.transforms as T
 
-from utils.func import renormalise, bandpass, moving_average
+from weakDetector.utils.func import renormalise, bandpass, moving_average
 
 from abc import ABC, abstractmethod
 
@@ -582,6 +582,7 @@ class VAEFeatureExtractor(FeatureEngine):
 
 		# Start empty sequence of features
 		len_seq = int(w.shape[1]/self._window_size)
+		
 		seq = torch.empty(2*self.latent_size, len_seq)
 
 		#Create windows and encode

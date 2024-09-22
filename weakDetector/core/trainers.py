@@ -76,7 +76,6 @@ class Trainer(ABC):
         self._model.train()
 
         for batch_idx, batch in enumerate(train_loader):
-            #print(batch_idx)
 
             self._optimiser.zero_grad()
             loss = self._batch_loss(batch, device)
@@ -192,7 +191,7 @@ class AETrainer(Trainer):
 
 class ClassifierTrainer(Trainer):
 
-    def __init__(self, model, optimiser, lr, loss_func=F.nll_loss, lr_decrease_rate=1, log_interval=200):
+    def __init__(self, model, optimiser, lr, loss_func=F.nll_loss, lr_decrease_rate=1, log_interval=2000):
 
         super().__init__(model, optimiser, lr,loss_func, lr_decrease_rate, log_interval)
         
@@ -206,6 +205,7 @@ class ClassifierTrainer(Trainer):
     def training_log(self):
         """Get dataframe that logs training process.
         """
+
         return pd.DataFrame({'epoch':[i for i in range(self._epoch)], 
                             'train_loss': self._train_losses,
                             'val_loss': self._val_losses,
@@ -228,8 +228,7 @@ class ClassifierTrainer(Trainer):
         #Send data to device
         data = data.to(device)
         target = target.to(device)
-        # Reshape data to be sent to model
-        data = data.view(-1, data.shape[0], data.shape[1])
+
 
         # Run model on data
         output = self._model(data.float())
@@ -258,7 +257,8 @@ class ClassifierTrainer(Trainer):
                 # Send data and labels to device, and reshape data
                 data = data.to(device)
                 target = target.to(device)
-                data = data.view(-1, data.shape[0], data.shape[1])
+           #     data = data.view(-1, data.shape[0], data.shape[1])
+
                 # Get model outputs
                 output = self._model(data)
                 # Add batch loss to epoch loss 
@@ -285,9 +285,9 @@ class ClassifierTrainer(Trainer):
             self._val_fscores.append(f1)
             self._val_recalls.append(recall)
             self._val_precisions.append(precision)
-
+            self._val_losses.append(val_loss)
             # print epoch metrics
-            print(f'{datetime.now().time().replace(microsecond=0)} %% '
+            print(f'{datetime.datetime.now().time().replace(microsecond=0)} %% '
             f'Epoch: {self._epoch}\n'
             f'Training average loss: {self._train_losses[-1]:.4f}\t'                  
             f'Validation average loss :{val_loss} \n'

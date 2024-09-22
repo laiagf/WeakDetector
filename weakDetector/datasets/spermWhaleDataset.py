@@ -1,4 +1,5 @@
 import pandas as pd
+pd.options.mode.chained_assignment = None
 import torch
 import os
 from torch.utils.data import Dataset
@@ -6,7 +7,7 @@ from utils.func import standardise
 from config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
-    def __init__(self, anootations_file, files_dir, target_length, sources='all', channels='all'):
+    def __init__(self, anootations_file, files_dir, target_length=None, sources='all', channels='all'):
         """Initialise SpermWhaleDataset dataset.
 
         Args:
@@ -26,6 +27,7 @@ class SpermWhaleDataset(Dataset):
 
         print(f"There are {len(self._df_annotations)} in the SpermWhaleDataset") 
 
+
     def _load_annotations(self, anootations_file, sources):
         """Load dataframe of files and labels
 
@@ -41,7 +43,8 @@ class SpermWhaleDataset(Dataset):
             df_annotations = df_annotations[df_annotations.Dataset.isin(sources)].reset_index(drop=True)
 
         return df_annotations
-    
+
+    @property
     def annotations(self):
         """Get annotations dataframe.
 
@@ -68,13 +71,15 @@ class SpermWhaleDataset(Dataset):
         if self._channels!='all':
             t = t[self._channels, :]
 
-        t = t[:, :self._target_length]
+        if self._target_length:
+            t = t[:, :self._target_length]
 
         #standardise
         for i in range(t.shape[0]):
             t[i, :] = standardise(t[i, :])
-
-        t = self._right_pad_if_necessary(t)
+    
+        if self._target_length:
+            t = self._right_pad_if_necessary(t)
          
         return t
     

@@ -1,6 +1,6 @@
 # Model management functions
-from models.vae_1d import VAE_1D
-from models.vae_resnet import VAE_ResNet
+from weakDetector.models.vae_1d import VAE_1D
+from weakDetector.models.vae_resnet import VAE_ResNet
 
 
 def load_vae(cfg, length):

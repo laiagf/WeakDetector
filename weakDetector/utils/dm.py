@@ -1,7 +1,8 @@
 # Dataset management functions
 import pandas as pd
-from datasets.spermWhaleDataset import SpermWhaleDataset
-from datasets.clickDataset import ClickDataset
+pd.options.mode.chained_assignment = None
+from weakDetector.datasets.spermWhaleDataset import SpermWhaleDataset
+from weakDetector.datasets.clickDataset import ClickDataset
 import os
 import torch
 

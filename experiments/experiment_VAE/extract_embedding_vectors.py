@@ -1,11 +1,12 @@
-from core.featureEngines import VAEFeatureExtractor
 
 import pandas as pd
 import os
 import torch
 from omegaconf import OmegaConf
 
-from utils.mm import load_vae
+from weakDetector.utils.mm import load_vae
+from weakDetector.core.featureEngines import VAEFeatureExtractor
+
 from config import ROOT_DIR, WAV_PATH
 
 
@@ -36,7 +37,7 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 	else:
 		raise ValueError(f'Value {wavfile_length} for wavfile length not accepted')
 	
-	out_dir = os.path.join(vae_dir, f'embeddings/{wavfile_length}')
+	out_dir = os.path.join(vae_dir, f'embeddings/{wavfile_length}/')
 	if not os.path.exists(os.path.join(vae_dir, 'embeddings')):
 		os.mkdir(os.path.join(vae_dir, 'embeddings'))
 	if not os.path.exists(out_dir):
@@ -55,7 +56,7 @@ if __name__=='__main__':
 		device="cuda:0"
 	else:
 		device="cpu"
-	
+	print('eo')
 	# Find all directories with trained models
 	vae_paths = []
 	#TODO improve this path
@@ -63,6 +64,7 @@ if __name__=='__main__':
 		#for filename in [f for f in filenames if f.endswith(".log")]:
 		if 'trained_vae.pth' in filenames:
 			vae_paths.append(dirpath)
+	print(vae_paths)
 	for vae_path in vae_paths:
 		extract_embeddings(vae_path, device)
 		#extract_embeddings(vae_path, device, wavfile_length=30)

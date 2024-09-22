@@ -1,21 +1,23 @@
 import pandas as pd
+pd.options.mode.chained_assignment = None
 from omegaconf import OmegaConf
 import hydra
 
 import os
 
 import torch
+import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
 from models.tcn import TCN
 from datasets.spermWhaleDataset import SpermWhaleDataset
-from classes.trainers import ClassifierTrainer
+from core.trainers import ClassifierTrainer
 from utils.dm import split_dataset
 from config import ROOT_DIR, SOURCES
 
 
 
-
+@hydra.main(config_path=ROOT_DIR+"experiments/experiment_VAE/config", config_name="config.yaml",version_base=None)
 def main(cfg):
 
 	if torch.cuda.is_available():
@@ -31,15 +33,14 @@ def main(cfg):
 	cfg_vae = OmegaConf.load(cfg_vae_path)
 
 
-	model = TCN(cfg.n_channels, cfg.parameters.output_size, [cfg.parameters.n_hid]*cfg.parameters.levels, 
-		kernel_size=cfg.parameters.kernel_size, dropout=cfg.parameters.dropout)
+	model = TCN(cfg_vae.model.latent_size*2, cfg.model.output_size, [cfg.model.n_hid]*cfg.model.levels, 
+		kernel_size=cfg.model.kernel_size, dropout=cfg.model.dropout)
 	model.to(device)
-
-	dataset = SpermWhaleDataset(annotations_path=cfg.annotations_path,
-                                files_dir=cfg.files_dir,
-                                target_length=cfg.target_length,
-                                sources=cfg.sources,
-                                channels=cfg.channels)
+	dataset = SpermWhaleDataset(anootations_file=cfg.anootations_file,
+                                files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
+                                target_length=cfg.target_length, ## TODO homogenise this
+                                sources=cfg.train_sources)
+#                                channels=cfg.channels)
 
     # split datasets
 	train_set, val_set, df_dataset = split_dataset(dataset, cfg)
@@ -54,12 +55,12 @@ def main(cfg):
 
 
 
-	optimiser = torch.optim.Adam(model.parameters(), lr=cfg.parameters.lr)
-	trainer = ClassifierTrainer(model=model, optimiser=optimiser, lr=cfg.parameters.lr,
+	optimiser = torch.optim.Adam(model.parameters(), lr=cfg.model.lr)
+	trainer = ClassifierTrainer(model=model, optimiser=optimiser, lr=cfg.model.lr,
                                 loss_func = F.nll_loss, lr_decrease_rate=10)
     
 
-	trainer(train_loader, val_loader, cfg.parameters.n_epochs, device)
+	trainer(train_loader, val_loader, cfg.model.n_epochs, device)
 
 
 	hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
@@ -69,3 +70,7 @@ def main(cfg):
 	df_log = trainer.training_log
 	df_log.to_csv(os.path.join(outputdir, 'training_log.csv'), index=False)
 	df_dataset.to_csv(os.path.join(outputdir, 'dataset.csv'))
+
+
+if __name__=='__main__':
+	main()

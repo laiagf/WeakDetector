@@ -23,7 +23,7 @@ def renormalise (signal, tmin=0, tmax=1):
 
 def standardise(signal):
     
-    signal = (signal - signal.median)/signal.std
+    signal = (signal - signal.median())/signal.std()
     
     return signal
 
