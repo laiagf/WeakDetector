@@ -3,3 +3,4 @@ weakDetector.egg-info/
 build/
 dist/
 experiments/experiment_VAE/train_vae/run_outputs/
+experiments/experiment_VAE/run_outputs/

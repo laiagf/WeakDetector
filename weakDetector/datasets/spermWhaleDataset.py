@@ -3,7 +3,7 @@ pd.options.mode.chained_assignment = None
 import torch
 import os
 from torch.utils.data import Dataset
-from utils.func import standardise
+from weakDetector.utils.func import standardise
 from config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
@@ -52,11 +52,13 @@ class SpermWhaleDataset(Dataset):
             _type_: _description_
         """
         return self._df_annotations
-
+    @annotations.setter
+    def annotations(self, df):
+        self._df_annotations = df.reset_index(drop=True)
     def __len__(self):
         return len(self._df_annotations)
 	
-    def _load_item(self, fname):
+    def load_item(self, fname):
         """Load sequence of extracted features.
 
         Args:
@@ -102,7 +104,7 @@ class SpermWhaleDataset(Dataset):
 
     def __getitem__(self, index):
         label = self._df_annotations.Label[index]
-        sequence = self._load_item(self._df_annotations.FileName[index][:-3]+'pt')
+        sequence = self.load_item(self._df_annotations.FileName[index][:-3]+'pt')
 
         return sequence, int(label)
     

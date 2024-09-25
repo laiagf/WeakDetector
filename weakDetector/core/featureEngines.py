@@ -33,6 +33,11 @@ class FeatureEngine(ABC):
 		self._bp_freqs = bp_freqs
 		self._bp_order = bp_order
 
+		self._tf = torchaudio.transforms.Spectrogram(
+			n_fft = 512,
+			window_fn = torch.hann_window,
+			hop_length = int(256)
+		)
 	def load_file(self, fpath):
 		"""Load file from a specified fpath and do some basic acoustic preprocessing.
 
@@ -119,16 +124,32 @@ class FeatureEngine(ABC):
 			w = bandpass(w, fs=self._target_sr, lowcut=lowcut, highcut=highcut, order=self._bp_order , )
 		return w
 
-
-	@abstractmethod
 	def __call__(self, fpath):
 		"""Load file and extract feature sequence.
 
 		Args:
-			fpath (string): Absolute path of file
-		"""
-		pass		
+			fpath (str): Absolute path of file to process.
 
+		Returns:
+			torch.Tensor: Feature sequence
+		"""
+		#Load file
+		w = self.load_file(fpath)
+		#Extract features
+		seq = self.extract(w)
+		
+		return seq	
+
+	@abstractmethod
+	def extract(self, w):
+		"""Extract feature sequence from signal.
+
+		Args:
+			w (_type_): _description_
+
+		Returns:
+			_type_: _description_
+		"""
 
 class HeuristicFeatureExtractor(FeatureEngine):
 	# TODO maybe improve this class so that order of fequencies can't be fucked up bymessing with the code... eg store descriptions and functions together in tuple
@@ -180,18 +201,8 @@ class HeuristicFeatureExtractor(FeatureEngine):
 		"""Get feature descriptions"""
 		return self._feature_descriptions
 
-	def __call__(self, fpath):
-		"""Load file and extract sequence of heuristic features
 
-		Args:
-			fpath (str): Absolute path of file to process.
-
-		Returns:
-			torch.Tensor: Feature sequence
-		"""
-		#Load file
-		w = self.load_file(fpath)
-
+	def extract(self, w):
 		# Start empty sequence of features
 		len_seq = int(w.shape[1]/self.window_length)
 		seq = torch.empty(self.latent_size, len_seq)
@@ -202,6 +213,8 @@ class HeuristicFeatureExtractor(FeatureEngine):
 			w_i = w[0, i*self.window_length:(i+1)*self.window_length]
 			seq[:, i] = self._extract_features_from_window(w_i)
 		return seq
+
+
 
 	def _compute_latent_size(self):
 		"""Compute latent size based on included features specified at init.
@@ -422,8 +435,6 @@ class HeuristicFeatureExtractor(FeatureEngine):
 			
 		return width
 
-
-
 class VAEFeatureExtractor(FeatureEngine):
 
 	def __init__(self, window_size, latent_size, input_type, model, target_length=None, sampling_rate=48000, bp_freqs=None, bp_order=6,
@@ -450,11 +461,7 @@ class VAEFeatureExtractor(FeatureEngine):
 		
 		self._step = self._window_size * self._n_parallel
 
-		self._tf = torchaudio.transforms.Spectrogram(
-			n_fft = 512,
-			window_fn = torch.hann_window,
-			hop_length = int(256)
-		)
+
 
 		if self._input_type=='spectrogram':
 			self._tf_spec = T.Resize((128, 128))
@@ -568,17 +575,17 @@ class VAEFeatureExtractor(FeatureEngine):
 		embeddings = torch.transpose(embeddings, 0, 1).cpu()
 		return embeddings
 
-	def __call__(self, fpath):
-		"""Load file and extract sequence of VAE embeddings
+
+
+	def extract(self, w):
+		"""Extract sequence of VAE embeddings
 
 		Args:
-			fpath (str): Absolute path of file to process.
+			w (torch.Tensor): Loaded and processed signal.
 
 		Returns:
 			torch.Tensor: Embeddings sequence
 		"""
-		#Load file
-		w = self.load_file(fpath)
 
 		# Start empty sequence of features
 		len_seq = int(w.shape[1]/self._window_size)

@@ -9,10 +9,10 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from models.tcn import TCN
-from datasets.spermWhaleDataset import SpermWhaleDataset
-from core.trainers import ClassifierTrainer
-from utils.dm import split_dataset
+from weakDetector.models.tcn import TCN
+from weakDetector.datasets.spermWhaleDataset import SpermWhaleDataset
+from weakDetector.core.trainers import ClassifierTrainer
+from weakDetector.utils.dm import split_dataset
 from config import ROOT_DIR, SOURCES
 
 

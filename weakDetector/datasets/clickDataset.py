@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 import numpy as np
-from utils.func import moving_average, renormalise
+from weakDetector.utils.func import moving_average, renormalise
 from config import ROOT_DIR
 
 class ClickDataset(Dataset):

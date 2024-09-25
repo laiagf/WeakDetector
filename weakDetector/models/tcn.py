@@ -81,3 +81,4 @@ class TCN(nn.Module):
         y1 = self.tcn(inputs)  # input should have dimension (N, C, L)
         o = self.linear(y1[:, :, -1])
         return F.log_softmax(o, dim=1)
+    
