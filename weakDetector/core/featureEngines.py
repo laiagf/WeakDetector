@@ -83,7 +83,6 @@ class FeatureEngine(ABC):
 		if self._target_sr!=sr:
 			resampler = torchaudio.transforms.Resample(sr, self._target_sr)
 			w = resampler(w)
-			#sr = self.target_sr
 		return w
 
 	def _cut_if_necessary(self, w, dim=1):
@@ -204,13 +203,13 @@ class HeuristicFeatureExtractor(FeatureEngine):
 
 	def extract(self, w):
 		# Start empty sequence of features
-		len_seq = int(w.shape[1]/self.window_length)
+		len_seq = int(w.shape[1]/self._window_size)
 		seq = torch.empty(self.latent_size, len_seq)
 
 		#Create windows and extract features
 		for i in range(len_seq):
 			#get chunk
-			w_i = w[0, i*self.window_length:(i+1)*self.window_length]
+			w_i = w[0, i*self._window_size:(i+1)*self._window_size]
 			seq[:, i] = self._extract_features_from_window(w_i)
 		return seq
 
@@ -242,7 +241,7 @@ class HeuristicFeatureExtractor(FeatureEngine):
 			list: descriptions of extracted features
 		"""
 		descriptions = []
-		if self.rms:
+		if self._rms:
 			for i in range(len(self._rms_freqs)-1):
 				descriptions.append(f'RMS {self._rms_freqs[i]}Hz-{self._rms_freqs[i+1]}Hz')
 		if self._peak_freq:
@@ -266,27 +265,26 @@ class HeuristicFeatureExtractor(FeatureEngine):
 			torch.Tensor: Extracted frequencies.
 		"""
 		features = []
-		if self.rms:
-			features  += self._compute_rms_values(w_i, self.target_sr) 
+		if self._rms:
+			features  += self._compute_rms_values(w_i) 
 		
 		if len(features)<self._latent_size:
 			# We need some freq and energy computatuins
-			s, freqs = self._compute_sfft_s(w_i, self.target_sr)
+			s, freqs = self._compute_sfft_s(w_i, self._target_sr)
 
-		if self.peak_freq:
+		if self._peak_freq:
 			features += self._compute_peak_freq(s, freqs)
 		
-		if self.mean_freq:
+		if self._mean_freq:
 			features += self._compute_mean_freq(s, freqs)
 		
-		if self.energies:
+		if self._energy_sums:
 			features+= self._compute_energy_sums(s, freqs)
 
-		if self.spectral_width:
+		if self._spectral_width:
 			features += self._compute_spectral_width()
 
-
-		return torch.Tensor(features, dtype=float)
+		return torch.tensor(features, dtype=torch.float32)
 
 	def _compute_rms_values(self, w):
 		"""Compute all rms values in one window over specified frequency bands.
@@ -301,11 +299,11 @@ class HeuristicFeatureExtractor(FeatureEngine):
 		for i in range(len(self._rms_freqs)-1):
 			low_freq = self._rms_freqs[i]
 			high_freq = self._rms_freqs[i+1]
-			b,a = butter(self._order, [low_freq, high_freq], fs=self._target_sr, btype='band')
+			b,a = butter(self._bp_order, [low_freq, high_freq], fs=self._target_sr, btype='band')
 			w_f = torch.tensor(lfilter(b, a, w), dtype=torch.float32)
 
 			# Compute rms
-			rms_values.apend(self._root_mean_square(w_f))
+			rms_values.append(self._root_mean_square(w_f))
 		
 		return rms_values
 

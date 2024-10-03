@@ -80,15 +80,17 @@ class Trainer(ABC):
             self._optimiser.zero_grad()
             loss = self._batch_loss(batch, device)
             loss.backward()
+            #print('loss backward')
             self._optimiser.step()
             train_loss += loss
             self._steps += train_loader.batch_size
-
+            #print('steps done')
             if batch_idx > 0 and batch_idx % self._log_interval == 0:
+                print('inside if')
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tSteps: {}'.format(
                     self._epoch, batch_idx * train_loader.batch_size, len(train_loader.dataset),
                     100. * batch_idx / len(train_loader), train_loss.item()/self._log_interval, self._steps))
-
+            
         self._train_losses.append(train_loss.cpu().detach().numpy()/len(train_loader.dataset))
 
 
