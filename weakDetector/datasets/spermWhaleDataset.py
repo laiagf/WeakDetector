@@ -4,20 +4,20 @@ import torch
 import os
 from torch.utils.data import Dataset
 from weakDetector.utils.func import standardise
-from config import ROOT_DIR
+from weakDetector.config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
-    def __init__(self, anootations_file, files_dir, target_length=None, sources='all', channels='all'):
+    def __init__(self, annotations_file, files_dir, target_length=None, sources='all', channels='all'):
         """Initialise SpermWhaleDataset dataset.
 
         Args:
-            anootations_file (_type_): _description_
+            annotations_file (_type_): _description_
             files_dir (_type_): _description_
             target_length (_type_): _description_
             sources (str, optional): _description_. Defaults to 'all'.
             channels (str, optional): _description_. Defaults to 'all'.
         """
-        self._df_annotations = self._load_annotations(anootations_file, sources)
+        self._df_annotations = self._load_annotations(annotations_file, sources)
 
         self._files_dir = files_dir
 
@@ -28,17 +28,17 @@ class SpermWhaleDataset(Dataset):
         print(f"There are {len(self._df_annotations)} in the SpermWhaleDataset") 
 
 
-    def _load_annotations(self, anootations_file, sources):
+    def _load_annotations(self, annotations_file, sources):
         """Load dataframe of files and labels
 
         Args:
-            anootations_file (_type_): _description_
+            annotations_file (_type_): _description_
             sources (_type_): _description_
 
         Returns:
             _type_: _description_
         """
-        df_annotations = pd.read_csv(os.path.join(ROOT_DIR, anootations_file))
+        df_annotations = pd.read_csv(os.path.join(ROOT_DIR, annotations_file))
         if sources!='all':
             df_annotations = df_annotations[df_annotations.Dataset.isin(sources)].reset_index(drop=True)
 
@@ -67,22 +67,19 @@ class SpermWhaleDataset(Dataset):
         Returns:
             _type_: _description_
         """
+
         t = torch.load(os.path.join(self._files_dir, fname))
-        
         # cut and get selected columns
         if self._channels!='all':
             t = t[self._channels, :]
 
         if self._target_length:
             t = t[:, :self._target_length]
-
         #standardise
         for i in range(t.shape[0]):
             t[i, :] = standardise(t[i, :])
-    
         if self._target_length:
             t = self._right_pad_if_necessary(t)
-         
         return t
     
     def _right_pad_if_necessary(self, signal, dim=1):

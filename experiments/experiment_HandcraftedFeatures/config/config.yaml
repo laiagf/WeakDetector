@@ -7,15 +7,15 @@ hydra:
 
 
 
+n_channels: 5
 
 annotations_file: files/4minDataset.csv
 
-run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_CdM,BAL_EB,BAL_MO,DCLDE,GP,ICE,IFAW]/'
-
+files_dir: /media/laia/Backup1/Files/RMS_4min/RMS_LR_OCT/
 
 split: random
 
-train_sources: all
+train_sources: [BAL_CdM,BAL_EB,BAL_MO,DCLDE,GP,ICE,IFAW]
 
 standard: True
 
@@ -32,5 +32,5 @@ model:
   levels: 8
   kernel_size: 20
   dropout: 0.4
-  lr: 0.001
+  lr: 0.00005
   log_intervalus: 50

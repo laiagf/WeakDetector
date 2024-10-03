@@ -71,12 +71,12 @@ class Trainer(ABC):
             train_loader (torch.utils.data.DataLoader): Training dataloader
             device (torch.device): Device to train on
         """
-
+        print('Train epoch')
         train_loss = 0
         self._model.train()
 
         for batch_idx, batch in enumerate(train_loader):
-
+            print('batch idx', batch_idx)
             self._optimiser.zero_grad()
             loss = self._batch_loss(batch, device)
             loss.backward()
@@ -119,6 +119,7 @@ class Trainer(ABC):
         print(device)
 
         for epoch in range(1, n_epochs+1):
+            print(epoch)
             self._train_epoch(train_loader, device)
             self._val_epoch(val_loader, device)
             self._epoch +=1

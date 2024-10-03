@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 from weakDetector.utils.func import moving_average, renormalise
-from config import ROOT_DIR
+from weakDetector.config import ROOT_DIR
 
 class ClickDataset(Dataset):
 	def __init__(self, dataset_features, csv_file, tensor_dir, normalise=True, smooth=False, channels='all', sources='all', split_files=None):

@@ -6,7 +6,7 @@ from weakDetector.datasets.clickDataset import ClickDataset
 import os
 import torch
 
-from config import ROOT_DIR, SOURCES
+from weakDetector.config import ROOT_DIR, SOURCES
 
 
 def random_split_df(csv_path, train_proportion = 0.7, manual_seed=42):
@@ -63,14 +63,14 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
     elif cfg['split']=='by_source':
         train_set = dataset
         #all_sources = ['BAL_AM','BAL_CdM','BAL_EB','BAL_MO','DCLDE','GP','ICE','IFAW', 'CS19', 'CS20']
-        val_set_sources = [s for s in SOURCES if s not in cfg['sources']]
+        val_set_sources = [s for s in SOURCES if s not in cfg['train_sources']]
         print('Val sources', val_set_sources)
 
-        val_set = SpermWhaleDataset(annotations_path=cfg.annotations_path,
+        val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
                                 files_dir=cfg.files_dir,
                                 target_length=cfg.target_length,
-                                sources=val_set_sources,
-                                channels=cfg.channels)
+                                sources=val_set_sources)
+                              #  channels=cfg.channels) TODO
         
         df_train = train_set.annotations
         df_val = val_set.annotations

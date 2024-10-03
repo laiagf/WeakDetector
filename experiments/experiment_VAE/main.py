@@ -36,7 +36,7 @@ def main(cfg):
 	model = TCN(cfg_vae.model.latent_size*2, cfg.model.output_size, [cfg.model.n_hid]*cfg.model.levels, 
 		kernel_size=cfg.model.kernel_size, dropout=cfg.model.dropout)
 	model.to(device)
-	dataset = SpermWhaleDataset(anootations_file=cfg.anootations_file,
+	dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
                                 files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
                                 target_length=cfg.target_length, ## TODO homogenise this
                                 sources=cfg.train_sources)
