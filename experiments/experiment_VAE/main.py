@@ -13,7 +13,7 @@ from weakDetector.models.tcn import TCN
 from weakDetector.datasets.spermWhaleDataset import SpermWhaleDataset
 from weakDetector.core.trainers import ClassifierTrainer
 from weakDetector.utils.dm import split_dataset
-from config import ROOT_DIR, SOURCES
+from weakDetector.config import ROOT_DIR, SOURCES
 
 
 

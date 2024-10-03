@@ -76,7 +76,7 @@ class Trainer(ABC):
         self._model.train()
 
         for batch_idx, batch in enumerate(train_loader):
-            print('batch idx', batch_idx)
+            #print('batch idx', batch_idx)
             self._optimiser.zero_grad()
             loss = self._batch_loss(batch, device)
             loss.backward()
