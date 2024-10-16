@@ -7,7 +7,7 @@ from omegaconf import OmegaConf
 from weakDetector.utils.mm import load_vae
 from weakDetector.core.featureEngines import VAEFeatureExtractor
 
-from config import ROOT_DIR, WAV_PATH
+from weakDetector.config import ROOT_DIR, WAV_PATH
 
 
 def extract_embeddings(vae_dir, device, wavfile_length=4*60):
