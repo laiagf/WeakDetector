@@ -31,11 +31,11 @@ class ClickDataset(Dataset):
 		self._feature_length, self._tensor_shape = self._calculate_dataset_parameters()
 		df = pd.read_csv(os.path.join(ROOT_DIR, csv_file))
 
-		if split_files!=None and sources!='all':
+		if type(split_files)==list and sources!='all':
 			raise ValueError(f"Filtering by both index and source is not allowed")
-
-		if split_files:
-			df = df[df.File.isin(split_files)]
+		if type(split_files)==list:
+			df = df[df.FileName.isin(split_files)]
+			print('len df', len(df))
 			df.reset_index(drop=True, inplace=True)
 
 		# Filter DataFrame based on specified sources
