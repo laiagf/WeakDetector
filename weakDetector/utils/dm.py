@@ -67,7 +67,7 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
         print('Val sources', val_set_sources)
 
         val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
-                                files_dir=cfg.files_dir,
+                                files_dir=dataset.files_dir,
                                 target_length=cfg.target_length,
                                 sources=val_set_sources)
                               #  channels=cfg.channels) TODO

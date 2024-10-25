@@ -52,6 +52,12 @@ class SpermWhaleDataset(Dataset):
             _type_: _description_
         """
         return self._df_annotations
+    
+    @property
+    def files_dir(self):
+        return self._files_dir
+    
+
     @annotations.setter
     def annotations(self, df):
         self._df_annotations = df.reset_index(drop=True)
