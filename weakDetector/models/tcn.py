@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn 
-from torch.nn.utils import weight_norm
 import torch.nn.functional as F
 
 
@@ -15,24 +14,32 @@ class Chomp1d(nn.Module):
         return x[:, :, :-self.chomp_size].contiguous()
 
 
+
 class TemporalBlock(nn.Module):
-    def __init__(self, n_inputs, n_outputs, kernel_size, stride, dilation, padding, dropout=0.2):
+    def __init__(self, n_inputs, n_outputs, kernel_size, stride, dilation, padding, mus=[], sigmas=[], dropout=0.2):
         super(TemporalBlock, self).__init__()
-        self.conv1 = weight_norm(nn.Conv1d(n_inputs, n_outputs, kernel_size,
-                                           stride=stride, padding=padding, dilation=dilation))
+        self.mus = sigmas
+        self.sigmas = mus
+        self.conv1 = nn.Conv1d(n_inputs, n_outputs, kernel_size,
+                                           stride=stride, padding=padding, dilation=dilation)
+        
+        self.batch_norm1 = nn.BatchNorm1d(n_outputs, eps=1e-3)
         chomp1 = Chomp1d(padding)
         relu1 = nn.ReLU()
         dropout1 = nn.Dropout(dropout)
 
-        self.conv2 = weight_norm(nn.Conv1d(n_outputs, n_outputs, kernel_size,
-                                           stride=stride, padding=padding, dilation=dilation))
+        self.conv2 = nn.Conv1d(n_outputs, n_outputs, kernel_size,
+                                           stride=stride, padding=padding, dilation=dilation)
+
+        self.batch_norm2 = nn.BatchNorm1d(n_outputs, eps=1e-3)
+
         chomp2 = Chomp1d(padding)
         relu2 = nn.ReLU()
         dropout2 = nn.Dropout(dropout)
 
 
-        self.net = nn.Sequential(self.conv1, chomp1, relu1, dropout1,
-                                 self.conv2, chomp2, relu2, dropout2)
+      #  self.net = nn.Sequential(self.conv1, self.batch_norm1, chomp1, relu1, dropout1,
+       #                          self.conv2, self.batch_norm2, chomp2, relu2, dropout2)
         self.downsample = nn.Conv1d(n_inputs, n_outputs, 1) if n_inputs != n_outputs else None
         self.relu = nn.ReLU()
         self.init_weights()
@@ -42,10 +49,21 @@ class TemporalBlock(nn.Module):
         self.conv2.weight.data.normal_(0, 0.01)
         if self.downsample is not None:
             self.downsample.weight.data.normal_(0, 0.01)
+        
 
     def forward(self, x):
+        out = self.conv1(x)
+        out = self.batch_norm1((out-self.mus[0])/self.sigmas[0])
+        out = self.comp1(out)
+        out = self.relu1(out)
+        out = self.dropout1(out)
 
-        out = self.net(x)
+        out = self.conv2(out)
+        out = self.batch_norm2((out-self.mus[1])/self.sigmas[1])
+        out = self.comp2(out)
+        out = self.relu2(out)
+        out = self.dropout2(out) 
+
         res = x if self.downsample is None else self.downsample(x)
 
         return self.relu(out + res)
