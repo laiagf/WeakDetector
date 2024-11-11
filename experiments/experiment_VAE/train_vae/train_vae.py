@@ -7,15 +7,16 @@ import hydra
 import pandas as pd
 
 
-from datasets.clickDataset import ClickDataset
+from weakDetector.datasets.clickDataset import ClickDataset
 
-from utils.dm import split_dataset
-from utils.mm import load_vae
-from core.trainers import AETrainer
+from weakDetector.utils.dm import split_dataset
+from weakDetector.utils.mm import load_vae
+from weakDetector.core.trainers import AETrainer
 
 
 
-from config import ROOT_DIR
+
+from weakDetector.config import ROOT_DIR
 
 
 torch.manual_seed(0)

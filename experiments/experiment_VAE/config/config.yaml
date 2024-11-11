@@ -10,12 +10,11 @@ hydra:
 
 annotations_file: files/4minDataset.csv
 
-run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_CdM,BAL_EB,BAL_MO,DCLDE,GP,ICE,IFAW]/'
+run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_CdM,BAL_EB,BAL_MO]/'
 
+split: by_source
 
-split: random
-
-train_sources: all
+train_sources: [BAL_CdM,BAL_EB,BAL_MO]
 
 standard: True
 
