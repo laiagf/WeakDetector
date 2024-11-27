@@ -13,10 +13,8 @@ class Chomp1d(nn.Module):
 
         return x[:, :, :-self.chomp_size].contiguous()
 
-
-
 class TemporalBlock(nn.Module):
-    def __init__(self, n_inputs, n_outputs, kernel_size, stride, dilation, padding, mus=[], sigmas=[], dropout=0.2):
+    def __init__(self, n_inputs, n_outputs, kernel_size, stride, dilation, padding, mus=[0, 0], sigmas=[1, 1], dropout=0.2):
         super(TemporalBlock, self).__init__()
         self.mus = sigmas
         self.sigmas = mus
@@ -70,7 +68,6 @@ class TemporalBlock(nn.Module):
             return self.relu(out + res), [out1, out2]
         else:
             return self.relu(out + res)
-
 
 class TemporalConvNet(nn.Module):
     def __init__(self, num_inputs, num_channels, kernel_size=2, dropout=0.2):
