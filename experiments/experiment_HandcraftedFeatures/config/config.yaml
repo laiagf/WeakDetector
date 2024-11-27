@@ -15,7 +15,7 @@ files_dir: /media/laia/Backup1/Files/RMS_4min/RMS_LR_OCT/
 
 split: random
 
-train_sources: [BAL_CdM,BAL_EB,BAL_MO,DCLDE,GP,ICE,IFAW]
+train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,ICE,MED]
 
 standard: True
 

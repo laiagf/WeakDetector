@@ -62,7 +62,6 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
 
     elif cfg['split']=='by_source':
         train_set = dataset
-        #all_sources = ['BAL_AM','BAL_CdM','BAL_EB','BAL_MO','DCLDE','GP','ICE','IFAW', 'CS19', 'CS20']
         val_set_sources = [s for s in SOURCES if s not in cfg['train_sources']]
         print('Val sources', val_set_sources)
 
@@ -105,7 +104,6 @@ def split_click_dataset(dataset:ClickDataset, cfg, random_prop=0.7):
 	
     elif cfg.split=='by_source':
         train_set=dataset
-        #all_sources = ['BAL_AM','BAL_CdM','BAL_EB','BAL_MO','DCLDE','GP','ICE','IFAW', 'CS19', 'CS20']
         val_sources = [s for s in SOURCES if s not in cfg.train_sources]
         val_set = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=val_sources)
         print(f"There are {len(train_set)} samples in the training dataset (sources{cfg.train_sources}, and {len(val_set)} in the validation set (sources {val_sources})")
