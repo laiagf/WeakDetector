@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn 
 import torch.nn.functional as F
+from torch.nn.utils import weight_norm
 
 
 #https://github.com/locuslab/TCN
@@ -16,24 +17,24 @@ class Chomp1d(nn.Module):
 class TemporalBlock(nn.Module):
     def __init__(self, n_inputs, n_outputs, kernel_size, stride, dilation, padding, mus=[0, 0], sigmas=[1, 1], dropout=0.2):
         super(TemporalBlock, self).__init__()
-        self.mus = sigmas
-        self.sigmas = mus
+        self.mus = mus
+        self.sigmas = sigmas
         self.conv1 = nn.Conv1d(n_inputs, n_outputs, kernel_size,
                                            stride=stride, padding=padding, dilation=dilation)
         
         self.batch_norm1 = nn.BatchNorm1d(n_outputs, eps=1e-3)
-        chomp1 = Chomp1d(padding)
-        relu1 = nn.ReLU()
-        dropout1 = nn.Dropout(dropout)
+        self.chomp1 = Chomp1d(padding)
+        self.relu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(dropout)
 
         self.conv2 = nn.Conv1d(n_outputs, n_outputs, kernel_size,
                                            stride=stride, padding=padding, dilation=dilation)
 
         self.batch_norm2 = nn.BatchNorm1d(n_outputs, eps=1e-3)
 
-        chomp2 = Chomp1d(padding)
-        relu2 = nn.ReLU()
-        dropout2 = nn.Dropout(dropout)
+        self.chomp2 = Chomp1d(padding)
+        self.relu2 = nn.ReLU()
+        self.dropout2 = nn.Dropout(dropout)
 
 
       #  self.net = nn.Sequential(self.conv1, self.batch_norm1, chomp1, relu1, dropout1,
@@ -52,13 +53,15 @@ class TemporalBlock(nn.Module):
     def forward(self, x, log_weights=False):
         out1 = self.conv1(x)
         out = self.batch_norm1((out1-self.mus[0])/self.sigmas[0])
-        out = self.comp1(out)
+        #out=out1
+        out = self.chomp1(out)
         out = self.relu1(out)
         out = self.dropout1(out)
 
         out2 = self.conv2(out)
+        #out=out2
         out = self.batch_norm2((out2-self.mus[1])/self.sigmas[1])
-        out = self.comp2(out)
+        out = self.chomp2(out)
         out = self.relu2(out)
         out = self.dropout2(out) 
 
@@ -81,8 +84,8 @@ class TemporalConvNet(nn.Module):
             layers += [TemporalBlock(in_channels, out_channels, kernel_size, stride=1, dilation=dilation_size,
                                      padding=(kernel_size-1) * dilation_size, dropout=dropout)]
 
-        #self.network = nn.Sequential(*layers)
-        self.layers = layers
+        self.layers = nn.Sequential(*layers)
+        
     def forward(self, x, log_weights=False):
         if log_weights:
             weights = []
