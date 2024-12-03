@@ -10,12 +10,12 @@ hydra:
 
 annotations_file: files/4minDataset.csv
 
-run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_CdM,BAL_EB,BAL_MO]/'
-
+run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]/'
+#run_path: 'dataset=spectrogram,split=random,train_sources=all/'
 split: by_source
-
-train_sources: [BAL_CdM,BAL_EB,BAL_MO]
-
+#split: random
+train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]
+#train_sources
 standard: True
 
 target_sampling_rate: 48000
@@ -26,7 +26,7 @@ model:
   name: tcn
   output_size: 2
   batch_size: 8
-  n_epochs: 25
+  n_epochs: 25 
   n_hid: 25
   levels: 8
   kernel_size: 20
