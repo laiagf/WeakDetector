@@ -68,7 +68,7 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
         val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
                                 files_dir=dataset.files_dir,
                                 target_length=cfg.target_length,
-                                sources=val_set_sources)
+                                sources=val_set_sources, min_snr=cfg.min_snr)
                               #  channels=cfg.channels) TODO
         
         df_train = train_set.annotations

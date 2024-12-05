@@ -11,18 +11,18 @@ n_channels: 5
 
 annotations_file: files/4minDataset.csv
 
-files_dir: /media/laia/Backup1/Files/RMS_4min/RMS_LR_OCT/
+files_dir: /mnt/spinning1/RMS_4min/RMS_LR_OCT/
 
-split: random
+split: by_source
 
-train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,ICE,MED]
+train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]
 
 standard: True
 
 target_sampling_rate: 48000
 target_seconds: 240
 target_length: 351
-
+min_snr: 0
 model:
   name: tcn
   output_size: 2
