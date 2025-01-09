@@ -10,12 +10,12 @@ import torchvision.transforms as T
 
 from weakDetector.utils.func import renormalise, bandpass, moving_average
 
-from abc import ABC, abstractmethod
+#from abc import ABC, abstractmethod
 
 
 # TODO TEST THESE CCREATEORS
 
-class FeatureEngine(ABC):
+class FeatureEngine():
 
 	def __init__(self, window_size, target_length=None, sampling_rate=48000, bp_freqs=None, bp_order=6):
 		"""Initialize FeatureEngine abstract class.
@@ -38,6 +38,40 @@ class FeatureEngine(ABC):
 			window_fn = torch.hann_window,
 			hop_length = int(256)
 		)
+
+	@property 	
+	def target_length(self):
+		""" Get target_length. """
+		return self._target_length
+
+	@target_length.setter
+	def target_length(self, value):
+		self._target_length = value
+
+
+	def preprocess_wavfile(self, w, sr):
+		"""
+		TODO
+		"""
+		# substract median
+		w = w - torch.median(w)
+		
+		# resample if specified and necessary
+		w  = self._resample_if_necessary(w, sr)
+
+		#keep first channel
+		if w.shape[0]>1:
+			w =  w[:1, :]
+
+		# cut to specified length if signal is too long
+		if self._target_length is not None:
+			w = self._cut_if_necessary(w)
+
+		# Filter if specified
+		w = self._filter_if_specified(w)
+
+		return w
+
 	def load_file(self, fpath):
 		"""Load file from a specified fpath and do some basic acoustic preprocessing.
 
@@ -51,24 +85,16 @@ class FeatureEngine(ABC):
 		
 		# load wavfile
 		w, sr = torchaudio.load(fpath)
+
+		#preprocess
+		w = self.preprocess_wavfile(w, sr)
 		
-		# substract median
-		w = w - torch.median(w)
-		
-		# resample if specified and necessary
-		w  = self._resample_if_necessary(w, sr)
 
-		#keep first channel
-		if w.shape[0]>1:
-			w =  w[:1, :]
-
-		# cut to specified length if signal is too long
-		w = self._cut_if_necessary(w)
-
-		# Filter if specified
-		w = self._filter_if_specified(w)
 
 		return w
+	
+
+
 
 	def _resample_if_necessary(self, w, sr):
 		"""Resample time series if sampling rate is different from target_sr property.
@@ -139,7 +165,6 @@ class FeatureEngine(ABC):
 		
 		return seq	
 
-	@abstractmethod
 	def extract(self, w):
 		"""Extract feature sequence from signal.
 
@@ -149,6 +174,7 @@ class FeatureEngine(ABC):
 		Returns:
 			_type_: _description_
 		"""
+		pass
 
 class HeuristicFeatureExtractor(FeatureEngine):
 	# TODO maybe improve this class so that order of fequencies can't be fucked up bymessing with the code... eg store descriptions and functions together in tuple
