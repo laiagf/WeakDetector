@@ -3,7 +3,7 @@ from weakDetector.models.vae_1d import VAE_1D
 from weakDetector.models.vae_resnet import VAE_ResNet
 
 
-def load_vae(cfg, length):
+def load_vae(cfg, length=None):
     """Load ae model.
 
     Args:
