@@ -34,7 +34,7 @@ class ClickDataset(Dataset):
 		if type(split_files)==list and sources!='all':
 			raise ValueError(f"Filtering by both index and source is not allowed")
 		if type(split_files)==list:
-			df = df[df.FileName.isin(split_files)]
+			df = df[df.ParentFile.isin(split_files)]
 			print('len df', len(df))
 			df.reset_index(drop=True, inplace=True)
 
