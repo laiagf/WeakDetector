@@ -70,6 +70,12 @@ class FeatureEngine():
 		# Filter if specified
 		w = self._filter_if_specified(w)
 
+
+		#Standardise file
+		w = w - torch.median(w)
+		w = w/torch.std(w)
+
+
 		return w
 
 	def load_file(self, fpath):
