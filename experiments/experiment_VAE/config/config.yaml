@@ -32,7 +32,7 @@ model:
   name: tcn
   output_size: 2
   batch_size: 8
-  n_epochs: 25
+  n_epochs: 25 
   n_hid: 25
   levels: 8
   kernel_size: 20
