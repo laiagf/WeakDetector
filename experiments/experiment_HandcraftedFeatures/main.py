@@ -29,7 +29,7 @@ def main(cfg):
                                 files_dir=cfg.files_dir,
                                 target_length=cfg.target_length,
                                 sources=cfg.train_sources,
-                                channels='all')
+                                channels='all', min_snr=cfg.min_snr)
 
     # split datasets
     train_set, val_set, df_dataset = split_dataset(dataset, cfg)

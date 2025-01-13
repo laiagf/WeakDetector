@@ -7,7 +7,7 @@ from weakDetector.utils.func import standardise
 from weakDetector.config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
-    def __init__(self, annotations_file, files_dir, target_length=None, sources='all', channels='all'):
+    def __init__(self, annotations_file, files_dir, target_length=None, sources='all', channels='all', min_snr=0):
         """Initialise SpermWhaleDataset dataset.
 
         Args:
@@ -17,7 +17,7 @@ class SpermWhaleDataset(Dataset):
             sources (str, optional): _description_. Defaults to 'all'.
             channels (str, optional): _description_. Defaults to 'all'.
         """
-        self._df_annotations = self._load_annotations(annotations_file, sources)
+        self._df_annotations = self._load_annotations(annotations_file, sources, min_snr)
 
         self._files_dir = files_dir
 
@@ -28,7 +28,7 @@ class SpermWhaleDataset(Dataset):
         print(f"There are {len(self._df_annotations)} in the SpermWhaleDataset") 
 
 
-    def _load_annotations(self, annotations_file, sources):
+    def _load_annotations(self, annotations_file, sources, min_snr):
         """Load dataframe of files and labels
 
         Args:
@@ -39,6 +39,8 @@ class SpermWhaleDataset(Dataset):
             _type_: _description_
         """
         df_annotations = pd.read_csv(os.path.join(ROOT_DIR, annotations_file))
+        df_annotations = df_annotations[df_annotations.SNR_999>=min_snr].reset_index(drop=True)
+
         if sources!='all':
             df_annotations = df_annotations[df_annotations.Dataset.isin(sources)].reset_index(drop=True)
 

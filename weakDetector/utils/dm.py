@@ -9,13 +9,13 @@ import torch
 from weakDetector.config import ROOT_DIR, SOURCES
 
 
-def random_split_df(csv_path, train_proportion = 0.7, manual_seed=42):
+def random_split_df(csv_path, train_proportion = 0.7, manual_seed=0):
 	"""Get filenames after random split of df.
 
 	Args:
 		csv_path (string): path to 
 		train_proportion (float, optional): _description_. Defaults to 0.7.
-		manual_seed (int, optional): _description_. Defaults to 42.
+		manual_seed (int, optional): _description_. Defaults to 0.
 
 	Returns:
 		_type_: _description_
@@ -55,21 +55,20 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
     """
     if 'split' not in cfg.keys() or cfg['split']=='random':
         split_n=int(len(dataset)*random_prop) 
-        train_set, val_set = torch.utils.data.random_split(dataset, [split_n, len(dataset)-split_n], generator=torch.Generator().manual_seed(42)) 
+        train_set, val_set = torch.utils.data.random_split(dataset, [split_n, len(dataset)-split_n], generator=torch.Generator().manual_seed(cfg.random_state)) 
         df_dataset = dataset.annotations
         df_dataset['training']=0
         df_dataset.training[train_set.indices]=1
 
     elif cfg['split']=='by_source':
         train_set = dataset
-        #all_sources = ['BAL_AM','BAL_CdM','BAL_EB','BAL_MO','DCLDE','GP','ICE','IFAW', 'CS19', 'CS20']
         val_set_sources = [s for s in SOURCES if s not in cfg['train_sources']]
         print('Val sources', val_set_sources)
 
         val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
                                 files_dir=dataset.files_dir,
                                 target_length=cfg.target_length,
-                                sources=val_set_sources)
+                                sources=val_set_sources, min_snr=cfg.min_snr)
                               #  channels=cfg.channels) TODO
         
         df_train = train_set.annotations
@@ -105,20 +104,19 @@ def split_click_dataset(dataset:ClickDataset, cfg, random_prop=0.7):
 	
     elif cfg.split=='by_source':
         train_set=dataset
-        #all_sources = ['BAL_AM','BAL_CdM','BAL_EB','BAL_MO','DCLDE','GP','ICE','IFAW', 'CS19', 'CS20']
         val_sources = [s for s in SOURCES if s not in cfg.train_sources]
         val_set = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=val_sources)
         print(f"There are {len(train_set)} samples in the training dataset (sources{cfg.train_sources}, and {len(val_set)} in the validation set (sources {val_sources})")
 	
     elif cfg.split=='by_tcn_4':
-        train_files, val_files = random_split_df('files/datasets/4mindatasetB_LaiasVersion.csv')
+        train_files, val_files = random_split_df('files/datasets/4mindatasetB_LaiasVersion.csv', manual_seed=cfg.random_state)
         train_set =  ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=train_files)
         val_set = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=val_files)
         print(f"There are {len(train_set)} samples in the training dataset  and {len(val_set)}. Split made according to random split on 4min dataset B")
 
     elif cfg.split=='by_tcn_30':
         print('Splitting by tcn using 30secC_LaiasVersion')
-        train_files, val_files = random_split_df('files/datasets/30secdatasetC_LaiasVersion.csv')
+        train_files, val_files = random_split_df('files/datasets/30secdatasetC_LaiasVersion.csv', manual_seed=cfg.random_state)
         train_set =  ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=train_files)
         val_set = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=val_files)
         print(f"There are {len(train_set)} samples in the training dataset  and {len(val_set)}. Split made according to random split on 30 sec dataset C.")
