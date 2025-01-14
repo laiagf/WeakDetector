@@ -99,7 +99,7 @@ def split_click_dataset(dataset:ClickDataset, cfg, random_prop=0.7):
     """
     if 'split' not in cfg.keys() or cfg['split']=='random' or cfg['train_sources']=='all':
         split_n=int(len(dataset)*random_prop) 
-        train_set, val_set = torch.utils.data.random_split(dataset, [split_n, len(dataset)-split_n],  generator=torch.Generator().manual_seed(42)) 
+        train_set, val_set = torch.utils.data.random_split(dataset, [split_n, len(dataset)-split_n],  generator=torch.Generator().manual_seed(cfg.random_state)) 
         print(f"There are {len(dataset)} samples in the dataset, random split ({len(train_set)} training / {len(val_set)} validation).")
 	
     elif cfg.split=='by_source':
@@ -126,7 +126,7 @@ def split_click_dataset(dataset:ClickDataset, cfg, random_prop=0.7):
     
     return train_set, val_set
 
-def split_dataset(dataset, cfg, random_prop=0.7):   
+def split_dataset(dataset, cfg, random_prop=0.85):   
     """Split Dataset into training and validation sets.
 
     Args:

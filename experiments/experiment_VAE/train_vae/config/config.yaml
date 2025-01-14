@@ -1,15 +1,16 @@
 hydra:
   run:
-    dir: ./run_outputs/${hydra.job.override_dirname}
+    dir: ./run_outputs/${hydra.job.override_dirname}/random_state=${random_state}
   sweep:
     dir: ./run_outputs/
-    subdir: ${hydra.job.override_dirname}
+    subdir: ${hydra.job.override_dirname}/random_state=${random_state}
   job:
     config:
       override_dirname:
         exclude_keys:
           - csv_file
           - tensor_dir
+          - random_state
 defaults:
   - model: vae_resnet
 
@@ -17,7 +18,9 @@ csv_file: files/short_clips.csv
 
 train_sources: all
 
-split: by_source
+split: random
+
+random_state: 1
 
 dataset: spectrogram
 
