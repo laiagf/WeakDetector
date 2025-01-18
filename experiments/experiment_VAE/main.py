@@ -17,6 +17,7 @@ from weakDetector.config import ROOT_DIR, SOURCES
 
 
 
+
 @hydra.main(config_path=ROOT_DIR+"experiments/experiment_VAE/config", config_name="config.yaml",version_base=None)
 def main(cfg):
 
@@ -28,7 +29,7 @@ def main(cfg):
 
 	
 	# Load Dataset
-	vae_run_path = os.path.join(ROOT_DIR, 'experiments/experiment_VAE/train_vae/run_outputs/') + cfg.run_path 	
+	vae_run_path = os.path.join(ROOT_DIR, f'experiments/experiment_VAE/train_vae/run_outputs/split={cfg.split},train_sources={cfg.train_sources}/random_state={cfg.vae_random_state}/') 	
 	cfg_vae_path = vae_run_path +'.hydra/config.yaml'
 	cfg_vae = OmegaConf.load(cfg_vae_path)
 

@@ -1,22 +1,26 @@
 hydra:
   run:
-    dir: ./run_outputs/${now:%Y%m%d-%H%M%S}/0/
+    dir: ./run_outputs/${hydra.job.override_dirname}/random_state=${random_state}
   sweep:
-    dir: ./run_outputs/${now:%Y%m%d-%H%M%S}/
-    subdir: ${hydra.job.num}
-
+    dir: ./run_outputs/
+    subdir: ${hydra.job.override_dirname}/random_state=${random_state}
+  job:
+    config:
+      override_dirname:
+        exclude_keys:
+          - random_state
 
 
 
 annotations_file: files/4minDataset.csv
 
 #run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]/'
-run_path: 'dataset=spectrogram,split=random,train_sources=all/'
+#run_path: 'dataset=spectrogram,split=random,train_sources=all/'
+#run_path: 'split=by_source,train_sources=[CS,IFAW,ICE,DCLDE,GP]/'
+split: random
 
-split: by_source
-
-train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]
-
+#train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]
+train_sources: all
 
 standard: True
 
@@ -25,6 +29,7 @@ target_seconds: 240
 target_length: 351
 
 min_snr: 0 
+vae_random_state: 1
 
 random_state: 0
 

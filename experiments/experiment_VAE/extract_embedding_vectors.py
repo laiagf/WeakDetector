@@ -9,6 +9,13 @@ from weakDetector.core.featureEngines import VAEFeatureExtractor
 
 from weakDetector.config import ROOT_DIR, WAV_PATH
 
+from joblib import Parallel, delayed
+
+
+def process_file(feat_extractor, f, wav_dir, out_dir):
+	if not os.path.exists(out_dir+f[:-3]+'pt'):
+		seq = feat_extractor(os.path.join(wav_dir, f))    
+		torch.save(seq, out_dir+f[:-3]+'pt')
 
 def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 
@@ -27,7 +34,7 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 									  latent_size=cfg.model.latent_size, 
 									  input_type=cfg.dataset, 
 									  model=model,
-									  target_length=wavfile_length*48000)
+									  target_length=wavfile_length*48000, n_parallel=40)
 	
 	# TODO Improve csv links and names
 	if wavfile_length==4*60:
@@ -44,10 +51,11 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 		os.mkdir(out_dir)
 
 
-	for k, f in enumerate(df.FileName):
-		if not os.path.exists(out_dir+f[:-3]+'pt'):
-			seq = feat_extractor(os.path.join(WAV_PATH, f))    
-			torch.save(seq, out_dir+f[:-3]+'pt')
+
+	Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
+
+	#for k, f in enumerate(df.FileName):
+
 
 
 
@@ -61,6 +69,8 @@ if __name__=='__main__':
 	vae_paths = []
 	#TODO improve this path
 	for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs/")):
+	#for  dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs_old/dataset=spectrogram,split=random,train_sources=all/")):
+
 		#for filename in [f for f in filenames if f.endswith(".log")]:
 		if 'trained_vae.pth' in filenames:
 			vae_paths.append(dirpath)
