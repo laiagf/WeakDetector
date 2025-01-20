@@ -586,8 +586,13 @@ class VAEFeatureExtractor(FeatureEngine):
 		resized_spec = self._tf_spec(spec[:, 10:210, :])
 		# Flip spectrogram (not necessary but makes looking at them easier)
 		flipped_spec = torch.flipud(resized_spec[0, :, :])
+
+		#Standardise
+	#	flipped_spec = (flipped_spec-flipped_spec.median())/flipped_spec.std()
+
+
 		# Reshape and return
-		return flipped_spec.resize(1, 1, 128, 128)
+		return renormalise(flipped_spec.resize(1, 1, 128, 128))
 
 	def _encode(self, w_i):
 		"""Encode timeseries using the class' data input and model.

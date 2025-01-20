@@ -32,7 +32,7 @@ min_snr: 0
 vae_random_state: 1
 
 random_state: 0
-
+row_standardise: True
 model:
   name: tcn
   output_size: 2

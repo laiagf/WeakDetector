@@ -38,11 +38,15 @@ def main(cfg):
 		kernel_size=cfg.model.kernel_size, dropout=cfg.model.dropout)
 	model.to(device)
 
+	if cfg.row_standardise:
+		df_standard = pd.read_csv(os.path.join(vae_run_path, 'standard_dict.csv'))
+	else:
+		df_standard=None
 
 	dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
                                 files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
                                 target_length=cfg.target_length, ## TODO homogenise this
-                                sources=cfg.train_sources, min_snr=cfg.min_snr)
+                                sources=cfg.train_sources, min_snr=cfg.min_snr, df_standard=df_standard)
 #                                channels=cfg.channels)
 
     # split datasets

@@ -7,7 +7,7 @@ from weakDetector.utils.func import standardise
 from weakDetector.config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
-    def __init__(self, annotations_file, files_dir, target_length=None, sources='all', channels='all', min_snr=0):
+    def __init__(self, annotations_file, files_dir, df_standard=None, target_length=None, sources='all', channels='all', min_snr=0):
         """Initialise SpermWhaleDataset dataset.
 
         Args:
@@ -24,6 +24,8 @@ class SpermWhaleDataset(Dataset):
         self._target_length = target_length
 
         self._channels = channels
+
+        self._df_standard = df_standard
 
         print(f"There are {len(self._df_annotations)} in the SpermWhaleDataset") 
 
@@ -84,8 +86,9 @@ class SpermWhaleDataset(Dataset):
         if self._target_length:
             t = t[:, :self._target_length]
         #standardise
-        for i in range(t.shape[0]):
-            t[i, :] = standardise(t[i, :])
+        #for i in range(t.shape[0]):
+        #    t[i, :] = standardise(t[i, :])
+        t = self._row_standardise(t)
         if self._target_length:
             t = self._right_pad_if_necessary(t)
         return t
@@ -106,6 +109,12 @@ class SpermWhaleDataset(Dataset):
             last_dim_padding = (0, num_missing_samples) # padding if necessaryy
             signal = torch.nn.functional.pad(signal, last_dim_padding)
         return signal  
+    
+    def _row_standardise(self, t):
+        if isinstance(self._df_standard, pd.DataFrame):
+            for i in range(t.shape[0]):
+                t[i, :] = (t[i, :]- self._df_standard.row_mean[i])/self._df_standard.row_std[i]
+        return t
 
     def __getitem__(self, index):
         label = self._df_annotations.Label[index]
