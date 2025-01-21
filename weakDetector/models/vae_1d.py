@@ -116,7 +116,7 @@ class Encoder(torch.nn.Module):
 		np.random.seed(0)
 		z_std = torch.from_numpy(np.random.normal(0, 1, size=mean.size())).float()
 		sigma = torch.exp(logvar).cuda()
-		return mean + sigma * Variable(z_std, requires_grad=False).cuda(), z_std
+		return mean + sigma * Variable(z_std, requires_grad=False).cuda()#, z_std
 
 
 # Decoder block
@@ -198,6 +198,6 @@ class VAE_1D(torch.nn.Module):
 		return np.sum([np.prod(x.size()) for x in self.parameters()])
 	def forward(self, x):
 		#oh_class, mean, z = self.encoder(x)
-		z = self.encoder(x)
+		z, mean, logvar = self.encoder(x)
 		x_decoded = self.decoder(z)
 		return z, x_decoded #oh_class, mean, z, x_decoded

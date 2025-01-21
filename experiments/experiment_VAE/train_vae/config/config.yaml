@@ -1,9 +1,9 @@
 hydra:
   run:
-    dir: ./run_outputs/${hydra.job.override_dirname}/random_state=${random_state}
+    dir: ./run_outputs/${hydra.job.override_dirname}/${model.latent_size}/random_state=${random_state}
   sweep:
     dir: ./run_outputs/
-    subdir: ${hydra.job.override_dirname}/random_state=${random_state}
+    subdir: ${hydra.job.override_dirname}/${model.latent_size}/random_state=${random_state}
   job:
     config:
       override_dirname:
@@ -11,6 +11,7 @@ hydra:
           - csv_file
           - tensor_dir
           - random_state
+          - model.latent_size
 defaults:
   - model: vae_resnet
 
@@ -18,7 +19,6 @@ csv_file: files/short_clips.csv
 
 train_sources: all
 
-row_standardisation: True
 
 split: random
 
