@@ -1,9 +1,9 @@
-from classes.featureEngines import HeuristicFeatureExtractor
+from weakDetector.core.featureEngines import HeuristicFeatureExtractor
 
 import pandas as pd
 import os
 import torch
-from constants import ROOT_DIR, WAV_PATH
+from weakDetector.config import ROOT_DIR, WAV_PATH
 
 
 def extract_rms():
@@ -18,8 +18,8 @@ def extract_rms():
         '5bands': [1000, 2000, 4000, 8000, 16000, 20000]
     }
 
-    df = pd.read_csv(os.path.join(ROOT_DIR, 'files/datasets/4minDatasetB_LaiasVersions.csv'))
-    out_path = '/media/laia/Files/RMS_Vectors/'
+    df = pd.read_csv(os.path.join(ROOT_DIR, 'files/4minDataset.csv'))
+    out_path = '/mnt/spinning1/RMS_Vectors/'
 
     for res in resolutions.keys():
         for fs in frequency_bands.keys():
@@ -30,7 +30,7 @@ def extract_rms():
             feat_extractor = HeuristicFeatureExtractor(window_size=resolutions[res],
                                 rms=True, rms_freqs=frequency_bands[fs])
             
-            for f in df.Updated_Files:
+            for f in df.FileName:
                 seq = feat_extractor(os.path.join(WAV_PATH,f))    
                 torch.save(seq, out_dir+f[:-3]+'pt')
 
@@ -41,8 +41,8 @@ def extract_spectral():
     resolutions = {'HR': 512, 'LR':2048}
 
 
-    df = pd.read_csv(os.path.join(ROOT_DIR, 'files/datasets/4minDatasetB_LaiasVersions.csv'))
-    out_path = '/media/laia/Files/Spectral_Vectors/'
+    df = pd.read_csv(os.path.join(ROOT_DIR, 'files/4minDataset.csv'))
+    out_path = '/mnt/spinning1/Spectral_Vectors/'
 
     for res in resolutions.keys():
             out_dir = out_path
@@ -53,7 +53,7 @@ def extract_spectral():
                                 rms=True, rms_freqs=[1000, 20000], mean_freq=True,
                                 peak_freq=True, energy_sums=True, spectral_width=True)
             
-            for f in df.Updated_Files:
+            for f in df.FileName:
                 seq = feat_extractor(os.path.join(WAV_PATH,f))    
                 torch.save(seq, out_dir+f[:-3]+'pt')
 
