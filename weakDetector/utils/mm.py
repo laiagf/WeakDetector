@@ -119,6 +119,8 @@ def get_embedding_standardisation(run_path, device):
 		df_means_stds = pd.DataFrame({'Dataset':s, 'dimension':[i for i  in range(latent_size)], 'row_mean': means, 'row_std':stds})
 		dfs.append(df_means_stds)
 
+		df_all_dims = pd.DataFrame({'Dataset':[s], 'dimension':[-1], 'row_mean': c.mean().item(), 'row_std':c.std().item()})
+		dfs.append(df_all_dims)
 	df = pd.concat(dfs, axis=0)
 	df.to_csv(run_path+'standard_dict.csv', index=False)
 

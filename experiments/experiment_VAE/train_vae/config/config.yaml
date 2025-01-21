@@ -18,6 +18,8 @@ csv_file: files/short_clips.csv
 
 train_sources: all
 
+row_standardisation: True
+
 split: random
 
 random_state: 1
