@@ -81,41 +81,49 @@ def get_embedding_standardisation(run_path, device):
 
 
 	tensor_dir = cfg_ae.tensor_dir
-	embeddings = []
+
+	dfs = []
+
+	sources = list(set(df.Dataset))
+
+	for s in sources:
+		embeddings = []
+		for i in tqdm(df.index[df.Dataset==s], desc='standardising'):
+			t = torch.load(tensor_dir+df.Tensor_name[i])		
+			if cfg_ae['dataset']=='frame':
+				t = moving_average(t, 8)
+				t = torch.from_numpy(t)
+			#t = standardise(t)
+			t = renormalise(t)
+			t = t.reshape(tensor_shape)
+
+			with torch.no_grad(): 
+				z, mu, logvar = model.encoder(t.float().to(device))
+
+			embedding = torch.concat((mu, logvar), 1)
+
+			embeddings.append(embedding.cpu()[0, :])
 
 
-	for i in tqdm(df.index, desc='standardising'):
-		t = torch.load(tensor_dir+df.Tensor_name[i])		
-		if cfg_ae['dataset']=='frame':
-			t = moving_average(t, 8)
-			t = torch.from_numpy(t)
-		#t = standardise(t)
-		t = renormalise(t)
-		t = t.reshape(tensor_shape)
+		c = torch.stack(embeddings, dim=1)
 
-		with torch.no_grad(): 
-			z, mu, logvar = model.encoder(t.float().to(device))
+		means = []
+		stds = []
+		for i in range(latent_size):
+			c_i = c[i, :]
+			mean = c_i.mean()
+			std = c_i.std()
+			means.append(mean.item())
+			stds.append(std.item())
+			
+		df_means_stds = pd.DataFrame({'Dataset':s, 'dimension':[i for i  in range(latent_size)], 'row_mean': means, 'row_std':stds})
+		dfs.append(df_means_stds)
 
-		embedding = torch.concat((mu, logvar), 1)
-
-		embeddings.append(embedding.cpu()[0, :])
-
-
-	c = torch.stack(embeddings, dim=1)
-
-	means = []
-	stds = []
-	for i in range(latent_size):
-		c_i = c[i, :]
-		mean = c_i.mean()
-		std = c_i.std()
-		means.append(mean.item())
-		stds.append(std.item())
-		
-	df_means_stds = pd.DataFrame({'row_mean': means, 'row_std':stds})
-	df_means_stds.to_csv(run_path+'standard_dict.csv')
+	df = pd.concat(dfs, axis=0)
+	df.to_csv(run_path+'standard_dict.csv', index=False)
 
 	return 
+
 
 
 

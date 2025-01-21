@@ -44,12 +44,12 @@ def main(cfg):
 		df_standard=None
 
 	dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
-                                files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
-                                target_length=cfg.target_length, ## TODO homogenise this
-                                sources=cfg.train_sources, min_snr=cfg.min_snr, df_standard=df_standard)
-#                                channels=cfg.channels)
+								files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
+								target_length=cfg.target_length, ## TODO homogenise this
+								sources=cfg.train_sources, min_snr=cfg.min_snr, df_standard=df_standard)
+#								channels=cfg.channels)
 
-    # split datasets
+	# split datasets
 	train_set, val_set, df_dataset = split_dataset(dataset, cfg)
 	
 
@@ -64,8 +64,8 @@ def main(cfg):
 
 	optimiser = torch.optim.Adam(model.parameters(), lr=cfg.model.lr)
 	trainer = ClassifierTrainer(model=model, optimiser=optimiser, lr=cfg.model.lr,
-                                loss_func = F.nll_loss, lr_decrease_rate=10)
-    
+								loss_func = F.nll_loss, lr_decrease_rate=10)
+	
 
 	trainer(train_loader, val_loader, cfg.model.n_epochs, device)
 
