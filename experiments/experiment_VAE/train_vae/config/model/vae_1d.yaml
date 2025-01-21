@@ -2,9 +2,10 @@
 name: 'vae_1d'
 
 latent_size: 8
+n_classes: 8 
 out_channels: 4
 
 parameters: 
-  n_epochs: 800
+  n_epochs: 500
   lr: 0.0001
   batch_size: 16
