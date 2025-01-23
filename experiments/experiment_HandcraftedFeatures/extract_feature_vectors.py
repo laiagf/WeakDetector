@@ -31,8 +31,10 @@ def extract_rms():
                                 rms=True, rms_freqs=frequency_bands[fs])
             
             for f in df.FileName:
-                seq = feat_extractor(os.path.join(WAV_PATH,f))    
-                torch.save(seq, out_dir+f[:-3]+'pt')
+                if not os.path.exists(out_dir+f[:-3]+'pt'):
+
+                    seq = feat_extractor(os.path.join(WAV_PATH,f))    
+                    torch.save(seq, out_dir+f[:-3]+'pt')
 
 def extract_spectral():
     """Extract all spectral parameters feature vectors.
@@ -54,8 +56,9 @@ def extract_spectral():
                                 peak_freq=True, energy_sums=True, spectral_width=True)
             
             for f in df.FileName:
-                seq = feat_extractor(os.path.join(WAV_PATH,f))    
-                torch.save(seq, out_dir+f[:-3]+'pt')
+                if not os.path.exists(out_dir+f[:-3]+'pt'):
+                    seq = feat_extractor(os.path.join(WAV_PATH,f))    
+                    torch.save(seq, out_dir+f[:-3]+'pt')
 
 
 if __name__=='__main__':
