@@ -6,6 +6,6 @@ n_classes: 8
 out_channels: 4
 
 parameters: 
-  n_epochs: 500
+  n_epochs: 300
   lr: 0.0001
   batch_size: 16
