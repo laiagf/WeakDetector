@@ -22,9 +22,11 @@ def renormalise (signal, tmin=0, tmax=1):
 
 
 def standardise(signal):
-	
 	signal = (signal - signal.median())/signal.std()
 	
+	return signal
+
+def identity(signal):
 	return signal
 
 def bandpass(signal, fs, lowcut, highcut, order=6):

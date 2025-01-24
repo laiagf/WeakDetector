@@ -12,11 +12,11 @@ hydra:
           - tensor_dir
           - random_state
           - model.latent_size
-          - model.parameters.lr
           - model.parameters.n_epochs
           - model
           - split
           - train_sources
+          - model.parameters.lr
 defaults:
   - model: vae_resnet
 

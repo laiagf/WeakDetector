@@ -34,14 +34,23 @@ def main(cfg):
 
 	print(f"using {device} device")
 	
-	print(f"training {cfg.model.name} on dataset {cfg.dataset} with latent space of dim {cfg.model.latent_size}")
 
 
-	dataset = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources)
+	if cfg.dataset=='long_wf' or cfg.dataset=='short_wf': 
+		scale_method = 'standardise'
+	else:
+		scale_method='normalise'
+
+	print(f"training {cfg.model.name} on dataset {cfg.dataset} with latent space of dim {cfg.model.latent_size}. Using {scale_method} scaling method.")
+
+
+
+	dataset = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, scale_method=scale_method, sources=cfg.train_sources)
 
 
 	# Split dataset into training and validation files
 	train_set, val_set = split_dataset(dataset, cfg)
+
 
 	train_loader = DataLoader(dataset=train_set, batch_size=cfg.model.parameters.batch_size, shuffle=True)
 	val_loader = DataLoader(dataset=val_set, batch_size=cfg.model.parameters.batch_size, shuffle=True)
@@ -56,15 +65,17 @@ def main(cfg):
 
 	trainer = AETrainer(model, optimiser, cfg.model.parameters.lr)
 
-	trainer(train_loader, val_loader, cfg.model.parameters.n_epochs, device)
-
-
-	
-
 	hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
 	print(hydra_cfg['runtime']['output_dir'])
 	outputdir = hydra_cfg['runtime']['output_dir']
 	
+
+	trainer(train_loader, val_loader, cfg.model.parameters.n_epochs, device, outpath=outputdir, checkpoints_every=100)
+
+
+	
+
+
 	
 	torch.save(model.state_dict(), os.path.join(outputdir, 'trained_vae.pth'))	
 	df_log = trainer.training_log

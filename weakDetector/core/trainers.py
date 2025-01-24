@@ -1,6 +1,7 @@
 import torch.nn.functional as F
 import torch
 import pandas as pd
+import os
 from sklearn.metrics import f1_score, precision_score, recall_score
 import numpy as np
 import datetime
@@ -39,6 +40,7 @@ class Trainer(ABC):
         self._train_losses = []
 
         self._val_losses = []
+
 
     @property 
     def model(self):
@@ -86,7 +88,6 @@ class Trainer(ABC):
             self._steps += train_loader.batch_size
             #print('steps done')
             if batch_idx > 0 and batch_idx % self._log_interval == 0:
-                print('inside if')
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tSteps: {}'.format(
                     self._epoch, batch_idx * train_loader.batch_size, len(train_loader.dataset),
                     100. * batch_idx / len(train_loader), train_loss.item()/self._log_interval, self._steps))
@@ -107,7 +108,7 @@ class Trainer(ABC):
          
 
         
-    def __call__(self, train_loader, val_loader, n_epochs, device):
+    def __call__(self, train_loader, val_loader, n_epochs, device, outpath=None, checkpoints_every=-1):
         """Perform training loop.
 
         Args:
@@ -129,6 +130,10 @@ class Trainer(ABC):
                 self._lr /= self._lr_decrease_rate
                 for param_group in self._optimiser.param_groups:
                     param_group['lr'] = self._lr
+            
+            if epoch % checkpoints_every == 0 and outpath is not None:
+                torch.save(self._model.state_dict(), os.path.join(outpath, f'checkpoint_step_{epoch}.pth'))	
+
         
         #self._summarize_training()
 

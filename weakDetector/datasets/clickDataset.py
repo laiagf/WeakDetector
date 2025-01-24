@@ -3,18 +3,18 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 import numpy as np
-from weakDetector.utils.func import moving_average, renormalise
+from weakDetector.utils.func import moving_average, renormalise, standardise, identity
 from weakDetector.config import ROOT_DIR
 
 class ClickDataset(Dataset):
-	def __init__(self, dataset_features, csv_file, tensor_dir, normalise=True, smooth=False, channels='all', sources='all', split_files=None):
+	def __init__(self, dataset_features, csv_file, tensor_dir, scale_method='normalise', smooth=False, channels='all', sources='all', split_files=None):
 		"""Initialize ClickDataset dataset.
 
 		Args:
 			dataset_features (_type_): _description_
 			csv_file (_type_): _description_
 			tensor_dir (_type_): _description_
-			normalise (bool, optional): Whether to normalize the tensors. Defaults to True.
+			scale_method (optional): Defaults to normalise.
 			smooth (bool, optional): Whether to apply smoothing to the tensors. Defaults to False.
 			channels (str or int or list, optional): Channels to include in the tensors. Defaults to 'all'.
 			sources (str or list, optional): Sources from which to include tensors. Defaults to 'all'.
@@ -47,7 +47,16 @@ class ClickDataset(Dataset):
 		self._tensor_dir = tensor_dir
 		self._smooth = smooth
 		self._channels = channels
-		self._normalise = normalise
+		#self._normalise = normalise
+		if scale_method =='normalise':
+			self._scale = renormalise
+		elif scale_method == 'standardise':	
+			self._scale =standardise
+		elif (scale_method == None) or (scale_method == 'identity'):
+			self._scale = identity
+		else:
+			print(f'Scale method {f} not implemented. Defaulting to identity instead.')
+			self._scale = identity
 
 	@property
 	def feature_length(self):
@@ -83,8 +92,8 @@ class ClickDataset(Dataset):
 			tensor = moving_average(tensor, 8)
 		if self._channels!='all':
 			tensor = tensor[self._channels, :]	
-		if self._normalise:
-			tensor = renormalise(tensor)
+		
+		tensor = self._scale(tensor)
 		
 		# Reshape to specified shape 
 		tensor = tensor.reshape(self._tensor_shape)
