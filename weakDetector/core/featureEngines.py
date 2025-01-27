@@ -221,7 +221,6 @@ class HeuristicFeatureExtractor(FeatureEngine):
 
 		self._latent_size = self._compute_latent_size()
 		self._feature_descriptions = self._create_feature_description()
-
 	@property
 	def latent_size(self):
 		"""Get latent size."""
@@ -299,22 +298,26 @@ class HeuristicFeatureExtractor(FeatureEngine):
 		features = []
 		if self._rms:
 			features  += self._compute_rms_values(w_i) 
+			#print('rms')
 		
 		if len(features)<self._latent_size:
 			# We need some freq and energy computatuins
 			s, freqs = self._compute_sfft_s(w_i, self._target_sr)
 
 		if self._peak_freq:
-			features += self._compute_peak_freq(s, freqs)
-		
+			features += [self._compute_peak_freq(s, freqs)]
+			#print('peak freqs')
 		if self._mean_freq:
-			features += self._compute_mean_freq(s, freqs)
+			#print('mean freqs')
+			features += [self._compute_mean_freq(s, freqs)]
 		
 		if self._energy_sums:
+			#print('features:', features)
+			#print('energy sums:', self._compute_energy_sums(s,freqs))
 			features+= self._compute_energy_sums(s, freqs)
 
 		if self._spectral_width:
-			features += self._compute_spectral_width()
+			features += [self._compute_spectral_width(w_i)]
 
 		return torch.tensor(features, dtype=torch.float32)
 
@@ -438,7 +441,7 @@ class HeuristicFeatureExtractor(FeatureEngine):
 			float: Spectral width.
 		"""
 
-		s, freqs = self._get_sfft_s(w, nfft=nfft)
+		s, freqs = self._compute_sfft_s(w, nfft=nfft)
 		#Compute s in db scale
 		db =  10*np.log10(s)
 		max_db = db.max()
