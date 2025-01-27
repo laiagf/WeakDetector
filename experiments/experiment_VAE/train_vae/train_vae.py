@@ -63,7 +63,7 @@ def main(cfg):
 	optimiser = torch.optim.Adam(model.parameters(), lr=cfg.model.parameters.lr)
 
 
-	trainer = AETrainer(model, optimiser, cfg.model.parameters.lr)
+	trainer = AETrainer(model, optimiser, cfg.model.parameters.lr, lr_decrease_rate=100)
 
 	hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
 	print(hydra_cfg['runtime']['output_dir'])
