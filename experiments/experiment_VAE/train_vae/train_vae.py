@@ -36,12 +36,12 @@ def main(cfg):
 	
 
 
-	if cfg.dataset=='long_wf' or cfg.dataset=='short_wf': 
+	if cfg.dataset=='long_wf' or cfg.dataset=='short_wf' or cfg.scale=='standardise': 
 		scale_method = 'standardise'
 	else:
 		scale_method='normalise'
 
-	print(f"training {cfg.model.name} on dataset {cfg.dataset} with latent space of dim {cfg.model.latent_size}. Using {scale_method} scaling method.")
+	print(f"training {cfg.model.name} on dataset {cfg.dataset} using scale method {scale_method} with latent space of dim {cfg.model.latent_size}. Using {scale_method} scaling method.")
 
 
 

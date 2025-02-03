@@ -24,7 +24,7 @@ csv_file: files/short_clips.csv
 
 train_sources: all
 
-
+scale: normalise
 split: random
 
 random_state: 1
