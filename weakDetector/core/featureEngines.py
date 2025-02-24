@@ -520,14 +520,14 @@ class VAEFeatureExtractor(FeatureEngine):
 		Returns:
 			function: Preparer function
 		"""
-		if self._input_type == 'waveform':
+		if self._input_type == 'short_wf' or self._input_type=='long_wf':
 			return self._prepare_waveform
 		elif self._input_type == 'spectral_profile':
 			return self._prepare_specprof
 		elif self._input_type == 'spectrogram':
 			return self._prepare_spectrogram
 		else:
-			raise ValueError(f'Invalid value for input_type: {self._input_type}. Must be one of "waveform", "spectral_profile", "spectrogram"')
+			raise ValueError(f'Invalid value for input_type: {self._input_type}. Must be one of "short_wf", "long_wf" , "spectral_profile", "spectrogram"')
 	
 	def _prepare_waveform(self, w_i):
 		"""Prepare waveform to be sent into encoder.
@@ -557,7 +557,9 @@ class VAEFeatureExtractor(FeatureEngine):
 			torch.Tensor: Spectral profile
 		"""
 		w_i = w_i.reshape(self._n_parallel, self._window_size)
+		#print('Wi shape', w_i.shape)
 		norm_specs = torch.empty((self._n_parallel, 200))
+		#print('norm_specs shape', norm_specs.shape)
 		for k in range(self._n_parallel):
 			spec = self._tf(w_i[k, :])
 			clipped_spec = spec[10:210, 1]
@@ -567,7 +569,8 @@ class VAEFeatureExtractor(FeatureEngine):
 			normalised_spec = renormalise(smooth_spec)
 			norm_specs[k, :] = torch.Tensor(normalised_spec)
 		
-		r = w_i.reshape(self._n_parallel, 1, 200)
+
+		r = norm_specs.reshape(self._n_parallel, 1, 200)
 
 		return r
 
