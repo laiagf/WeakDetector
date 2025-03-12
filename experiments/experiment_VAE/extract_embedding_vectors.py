@@ -4,13 +4,16 @@ import os
 import torch
 from omegaconf import OmegaConf
 
+import warnings
+warnings.filterwarnings("ignore")
+
 from weakDetector.utils.mm import load_vae
 from weakDetector.core.featureEngines import VAEFeatureExtractor
 
 from weakDetector.config import ROOT_DIR, WAV_PATH
 
 from joblib import Parallel, delayed
-
+from tqdm import tqdm
 
 def process_file(feat_extractor, f, wav_dir, out_dir):
 	if not os.path.exists(out_dir+f[:-3]+'pt'):
@@ -52,8 +55,11 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 
 
 
-	Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
-
+	#Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
+	Parallel(n_jobs=8)(
+		delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir) 
+		for f in tqdm(list(df.FileName))
+	)
 	#for k, f in enumerate(df.FileName):
 
 
@@ -74,8 +80,10 @@ if __name__=='__main__':
 		#for filename in [f for f in filenames if f.endswith(".log")]:
 		if 'trained_vae.pth' in filenames:
 			vae_paths.append(dirpath)
-	print(vae_paths)
+	#print(vae_paths)
+	#vae_paths = ['/home/laia/Projects/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=short_wf,model.out_channels=8,scale=standardise/random_split,sources=all/24/random_state=1/']
 	for vae_path in vae_paths:
+		print(vae_path)
 		extract_embeddings(vae_path, device)
 		#extract_embeddings(vae_path, device, wavfile_length=30)
 
