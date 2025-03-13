@@ -1,6 +1,6 @@
 hydra:
   run:
-    dir: ./run_outputs/${hydra.job.override_dirname}/${split}_split,sources=${train_sources}/${model.latent_size}/random_state=${random_state}
+    dir: ./run_outputs/${hydra.job.override_dirname}/${split}_split,sources=${train_sources},min_snr=${min_snr}/${model.latent_size}/random_state=${random_state}
   sweep:
     dir: ./run_outputs/
     subdir: ${hydra.job.override_dirname}/${split}_split,sources=${train_sources}/${model.latent_size}/random_state=${random_state}
