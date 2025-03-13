@@ -45,7 +45,7 @@ def main(cfg):
 
 
 
-	dataset = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, scale_method=scale_method, sources=cfg.train_sources)
+	dataset = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, scale_method=scale_method, sources=cfg.train_sources, min_snr=cfg.min_snr)
 
 
 	# Split dataset into training and validation files

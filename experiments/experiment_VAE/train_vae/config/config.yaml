@@ -23,7 +23,7 @@ defaults:
 csv_file: files/short_clips.csv
 
 train_sources: all
-
+min_snr: 0
 scale: normalise
 split: random
 
