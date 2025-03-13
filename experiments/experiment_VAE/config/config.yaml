@@ -1,9 +1,9 @@
 hydra:
   run:
-    dir: ./run_outputs/${hydra.job.override_dirname}/random_state=${random_state}
+    dir: ./run_outputs/dataset=${dataset}/split=${split},train_sources=${train_sources}/${latent_size}/random_state=${random_state}
   sweep:
     dir: ./run_outputs/
-    subdir: ${hydra.job.override_dirname}/random_state=${random_state}
+    subdir: dataset=${dataset}/split=${split},train_sources=${train_sources}/${latent_size}/random_state=${random_state}
   job:
     config:
       override_dirname:
@@ -21,8 +21,11 @@ split: random
 
 #train_sources: [BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]
 train_sources: all
+dataset: spectrogram
 
 standard: True
+
+latent_size: 16
 
 target_sampling_rate: 48000
 target_seconds: 240
