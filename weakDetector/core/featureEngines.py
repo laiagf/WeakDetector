@@ -6,6 +6,7 @@ from scipy.signal import butter, lfilter
 import scipy
 import numpy as np
 import warnings
+warnings.filterwarnings("ignore")
 import torchvision.transforms as T
 
 from weakDetector.utils.func import renormalise, bandpass, moving_average
@@ -538,6 +539,7 @@ class VAEFeatureExtractor(FeatureEngine):
 		Returns:
 			torch.Tensor: Reformatted Time series
 		"""
+		#print('Wi shape', w_i.shape)
 		w_i = w_i.reshape(self._n_parallel, self._window_size)
 
 		for k in range(self._n_parallel):
@@ -632,11 +634,15 @@ class VAEFeatureExtractor(FeatureEngine):
 		len_seq = int(w.shape[1]/self._window_size)
 		
 		seq = torch.empty(2*self.latent_size, len_seq)
-
+		
 		#Create windows and encode
-		for i in range(0, len_seq, self._n_parallel):
+
+		n_steps = int(w.shape[1]/self._step)
+
+		for i in range(n_steps):
 			#get chunk
 			w_i = w[0, i*self._step:(i+1)*self._step]
+			#print(w.shape[1], i*self._step, (i+1)*self._step)
 			seq[:, i:(i+self._n_parallel)] = self._encode(w_i)
 
 		return seq		
