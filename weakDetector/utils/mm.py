@@ -29,10 +29,6 @@ def load_vae(cfg, length=None):
 	return model
 
 
-
-
-
-
 def find_length(cfg):
 	dataset_name = cfg['dataset']
 	print(dataset_name)
@@ -42,7 +38,7 @@ def find_length(cfg):
 	if dataset_name=='short_wf':
 		tensor_shape = [1, 1, 512]
 		length=512		
-	if dataset_name=='frame':
+	if dataset_name=='spectral_profile':
 		length=200
 		tensor_shape=[1, 1, 200]
 	if dataset_name=='spectrogram':
@@ -50,8 +46,11 @@ def find_length(cfg):
 		tensor_shape = [1, 1, 128, 128]
 	return length, tensor_shape
 
+
+
 def get_embedding_standardisation(run_path, device):
 	
+
 	cfg_ae_path = os.path.join(run_path, '.hydra/config.yaml')
 	cfg_ae = OmegaConf.load(cfg_ae_path)
 
@@ -61,7 +60,7 @@ def get_embedding_standardisation(run_path, device):
 	ae_input_length, tensor_shape = find_length(cfg_ae)
 
 	model = load_vae(cfg_ae, ae_input_length).to(device)
-	model.load_state_dict(torch.load(run_path+'trained_vae.pth' , map_location=device), strict=False)
+	model.load_state_dict(torch.load(os.path.join(run_path,'trained_vae.pth') , map_location=device), strict=False)
 	model.eval()
 
 	df = pd.read_csv(ROOT_DIR+'/files/short_clips.csv')
@@ -90,11 +89,19 @@ def get_embedding_standardisation(run_path, device):
 		embeddings = []
 		for i in tqdm(df.index[df.Dataset==s], desc='standardising'):
 			t = torch.load(tensor_dir+df.Tensor_name[i])		
-			if cfg_ae['dataset']=='frame':
-				t = moving_average(t, 8)
-				t = torch.from_numpy(t)
+
+			
+
+			#if cfg_ae['dataset']=='spectral_profile':
+			#	t = moving_average(t, 8)
+			#	t = torch.from_numpy(t)
 			#t = standardise(t)
-			t = renormalise(t)
+
+			if cfg_ae.dataset=='long_wf' or cfg_ae.dataset=='short_wf' or ('scale' in cfg_ae.keys() and cfg_ae.scale=='standardise'):
+				t = standardise(t)
+			else:
+				t = renormalise(t)
+			
 			t = t.reshape(tensor_shape)
 
 			with torch.no_grad(): 
@@ -121,7 +128,7 @@ def get_embedding_standardisation(run_path, device):
 
 
 	df = pd.concat(dfs, axis=0)
-	df.to_csv(run_path+'standard_dict.csv', index=False)
+	df.to_csv(os.path.join(run_path,'standard_dict.csv'), index=False)
 
 	return 
 
