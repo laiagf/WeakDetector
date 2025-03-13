@@ -1,9 +1,9 @@
 hydra:
   run:
-    dir: ./run_outputs/dataset=${dataset}/split=${split},train_sources=${train_sources}/${latent_size}/random_state=${random_state}
+    dir: ./run_outputs/dataset=${dataset}/split=${split},train_sources=${train_sources},min_snr=${min_snr}/${latent_size}/random_state=${random_state}
   sweep:
     dir: ./run_outputs/
-    subdir: dataset=${dataset}/split=${split},train_sources=${train_sources}/${latent_size}/random_state=${random_state}
+    subdir: dataset=${dataset}/split=${split},train_sources=${train_sources},min_snr=${min_snr}/${latent_size}/random_state=${random_state}
   job:
     config:
       override_dirname:
