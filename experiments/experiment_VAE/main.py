@@ -34,7 +34,7 @@ def main(cfg):
 	cfg_vae = OmegaConf.load(cfg_vae_path)
 
 
-	model = TCN(cfg_vae.model.latent_size*2, cfg.model.output_size, [cfg.model.n_hid]*cfg.model.levels, 
+	model = TCN(cfg_vae.model.latent_size, cfg.model.output_size, [cfg.model.n_hid]*cfg.model.levels, 
 		kernel_size=cfg.model.kernel_size, dropout=cfg.model.dropout)
 	model.to(device)
 
