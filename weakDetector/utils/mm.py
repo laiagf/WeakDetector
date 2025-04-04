@@ -88,7 +88,8 @@ def get_embedding_standardisation(run_path, device):
 	for s in sources:
 		embeddings = []
 		for i in tqdm(df.index[df.Dataset==s], desc='standardising'):
-			t = torch.load(tensor_dir+df.Tensor_name[i])		
+			t = torch.load(tensor_dir+df.Tensor_name[i])
+			t = torch.nan_to_num(t)		
 
 			
 
@@ -113,11 +114,12 @@ def get_embedding_standardisation(run_path, device):
 
 
 		c = torch.stack(embeddings, dim=1)
+		c_clipped = torch.clamp(c, min=-1000, max=1000)
 
 		means = []
 		stds = []
 		for i in range(latent_size):
-			c_i = c[i, :]
+			c_i = c_clipped[i, :]
 			mean = c_i.mean()
 			std = c_i.std()
 			means.append(mean.item())
