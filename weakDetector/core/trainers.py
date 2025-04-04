@@ -6,6 +6,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 import numpy as np
 import datetime
 from abc import ABC, abstractmethod
+from tqdm import tqdm
 
 
 class Trainer(ABC):
@@ -76,8 +77,7 @@ class Trainer(ABC):
         print('Train epoch')
         train_loss = 0
         self._model.train()
-
-        for batch_idx, batch in enumerate(train_loader):
+        for batch_idx, batch in tqdm(enumerate(train_loader)):
             #print('batch idx', batch_idx)
             self._optimiser.zero_grad()
             loss = self._batch_loss(batch, device)
