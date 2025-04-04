@@ -90,8 +90,11 @@ class SpermWhaleDataset(Dataset):
 		"""
 
 		t = torch.load(os.path.join(self._files_dir, fname))
+		t = torch.nan_to_num(t)
+		t = t[:int(t.shape[0]//2), :]
+		
 		dataset = '_'.join(fname.split('_')[:-2])
-
+		#print('a', t.isnan().any())
 
 		# cut and get selected columns
 		if self._channels!='all':
@@ -99,12 +102,20 @@ class SpermWhaleDataset(Dataset):
 
 		if self._target_length:
 			t = t[:, :self._target_length]
+		#print('b', t.isnan().any())
 		#standardise
 		#for i in range(t.shape[0]):
 		#	t[i, :] = standardise(t[i, :])
+		
 		t = self._row_standardise(t, dataset)
+		#print('c', t.isnan().any())
 		if self._target_length:
 			t = self._right_pad_if_necessary(t)
+		#print('d', t.isnan().any())
+		#print('---')
+
+		t = torch.nan_to_num(t)
+
 		return t
 	
 	def _right_pad_if_necessary(self, signal, dim=1):
@@ -127,17 +138,22 @@ class SpermWhaleDataset(Dataset):
 
 
 	def _row_standardise(self, t, dataset):
+
 		if self._standardise:
+			t = torch.clamp(t, min=-1000, max=1000)
+
 			for i in range(t.shape[0]):
 				m, std = self._standard_dict[dataset, i]['mean'], self._standard_dict[dataset, i]['std']
-
-				t[i, :] = (t[i, :]- m)/std
+				if std!=0:
+					t[i, :] = (t[i, :]- m)/std
+				else:
+					t[i, :] = (t[i, :] -m)
 		return t
 
 	def __getitem__(self, index):
 		label = self._df_annotations.Label[index]
 		sequence = self.load_item(self._df_annotations.FileName[index][:-3]+'pt')
-
+		#print(sequence.max(), sequence.min())
 		return sequence, int(label)
 	
 
