@@ -18,7 +18,11 @@ from tqdm import tqdm
 def process_file(feat_extractor, f, wav_dir, out_dir):
 	if not os.path.exists(out_dir+f[:-3]+'pt'):
 		seq = feat_extractor(os.path.join(wav_dir, f))    
+		print(seq.max(), seq.min())
 		torch.save(seq, out_dir+f[:-3]+'pt')
+		del seq
+	#torch.cuda.empty_cache()
+
 
 def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 
@@ -37,7 +41,7 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 									  latent_size=cfg.model.latent_size, 
 									  input_type=cfg.dataset, 
 									  model=model,
-									  target_length=wavfile_length*48000, n_parallel=1)
+									  target_length=wavfile_length*48000, n_parallel=8)
 	
 	# TODO Improve csv links and names
 	if wavfile_length==4*60:
@@ -61,8 +65,8 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 		for f in tqdm(list(df.FileName))
 	)
 	#for k, f in enumerate(df.FileName):
-
-
+	#for f in tqdm(list(df.FileName)):
+	#	process_file(feat_extractor, f, WAV_PATH, out_dir) 
 
 
 if __name__=='__main__':
@@ -82,7 +86,8 @@ if __name__=='__main__':
 			vae_paths.append(dirpath)
 	#print(vae_paths)
 	#vae_paths = ['/home/laia/Projects/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=short_wf,model.out_channels=8,scale=standardise/random_split,sources=all/24/random_state=1/']
-	vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectrogram/random_split,sources=all/64/random_state=1/']
+	#vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectrogram/random_split,sources=all/64/random_state=1/']
+	vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectral_profile/random_split,sources=all/64/random_state=1/']
 	for vae_path in vae_paths:
 		print(vae_path)
 		extract_embeddings(vae_path, device)

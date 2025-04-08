@@ -614,8 +614,10 @@ class VAEFeatureExtractor(FeatureEngine):
 		r = self._prepare_input(w_i)
 		with torch.no_grad():
 			_,  means, logvars = self._model.encoder(r.float().to(self._device))
-		embeddings = torch.concat((means, logvars), 1)
+		embeddings = torch.concat((means.cpu(), logvars.cpu()), 1)
 		embeddings = torch.transpose(embeddings, 0, 1).cpu()
+		#torch.cuda.empty_cache()
+
 		return embeddings
 
 
