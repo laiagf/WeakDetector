@@ -10,7 +10,7 @@ from weakDetector.models.vae_resnet import VAE_ResNet
 from weakDetector.config import ROOT_DIR
 from weakDetector.utils.func import standardise, renormalise
 
-def load_vae(cfg, length=None):
+def load_vae(cfg, length=None, device='cpu'):
 	"""Load ae model.
 
 	Args:
@@ -23,7 +23,7 @@ def load_vae(cfg, length=None):
 	
 	model_name = cfg.model.name
 	if model_name == 'vae_1d':
-		model = VAE_1D(length, cfg.model.n_classes, cfg.model.latent_size, cfg.model.out_channels)		
+		model = VAE_1D(length, cfg.model.n_classes, cfg.model.latent_size, cfg.model.out_channels, device)		
 	if model_name == 'vae_resnet':
 		model =  VAE_ResNet(int(cfg.model.latent_size))
 	return model

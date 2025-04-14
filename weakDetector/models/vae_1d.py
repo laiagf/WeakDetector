@@ -32,9 +32,10 @@ class Conv_block(torch.nn.Module):
 # Encoder block
 
 class Encoder(torch.nn.Module):
-	def __init__(self, in_channels, in_length, nclasses, latent_size, encoder_out_channels):
+	def __init__(self, in_channels, in_length, nclasses, latent_size, encoder_out_channels, device):
 		super(Encoder, self).__init__()
-		
+		self.device = device
+
 		self.in_channels = in_channels
 		self.in_length = in_length
 		self.nclasses = nclasses
@@ -115,16 +116,16 @@ class Encoder(torch.nn.Module):
 		#print('logvar', logvar) 
 		np.random.seed(0)
 		z_std = torch.from_numpy(np.random.normal(0, 1, size=mean.size())).float()
-		sigma = torch.exp(logvar).cuda()
-		return mean + sigma * Variable(z_std, requires_grad=False).cuda()#, z_std
+		sigma = torch.exp(logvar).to(self.device)
+		return mean + sigma * Variable(z_std, requires_grad=False).to(self.device)#, z_std
 
 
 # Decoder block
 
 class Decoder(torch.nn.Module):
-	def __init__(self, length, in_channels, nclasses, latent_size):
+	def __init__(self, length, in_channels, nclasses, latent_size, device):
 		super(Decoder, self).__init__()
-		
+		self.device=device
 		self.in_channels = in_channels
 		self.length = length
 		self.latent_size = latent_size
@@ -171,7 +172,7 @@ class Decoder(torch.nn.Module):
 		
 	def forward(self, z):
 
-		x = self.relu(self.adapt_nn(z)).cuda()
+		x = self.relu(self.adapt_nn(z)).to(self.device)
 		#print('s1', x.shape)
 		x = x.view(x.size(0), self.in_channels, self.length // 2 // 2 // 2)
 		#print('s2', x.shape)
@@ -190,10 +191,10 @@ class Decoder(torch.nn.Module):
 # VAE
 
 class VAE_1D(torch.nn.Module):
-	def __init__(self, length, nclasses, latent_size, transition_channels):
+	def __init__(self, length, nclasses, latent_size, transition_channels, device):
 		super(VAE_1D, self).__init__()
-		self.encoder = Encoder(1, length, nclasses, latent_size, transition_channels)
-		self.decoder = Decoder(length, transition_channels, nclasses, latent_size)
+		self.encoder = Encoder(1, length, nclasses, latent_size, transition_channels, device)
+		self.decoder = Decoder(length, transition_channels, nclasses, latent_size, device)
 	def count_parameters(self):
 		return np.sum([np.prod(x.size()) for x in self.parameters()])
 	def forward(self, x):

@@ -511,6 +511,15 @@ class VAEFeatureExtractor(FeatureEngine):
 	def model(self):
 		"""Get VAE model."""
 		return self._model
+
+	@model.setter
+	def model(self, model):
+		self._model = model
+
+	def load_weights(self, weight_path):
+		self._model.load_state_dict(torch.load(weight_path, map_location=self._device ), strict=False)
+		self._model.eval()
+		#print('model reloaded')
 	
 	def _choose_data_preparer(self):
 		"""Choose function to prepare data to be sent into encoer based on input_type property 
@@ -613,9 +622,29 @@ class VAEFeatureExtractor(FeatureEngine):
 		"""
 		r = self._prepare_input(w_i)
 		with torch.no_grad():
-			_,  means, logvars = self._model.encoder(r.float().to(self._device))
-		embeddings = torch.concat((means.cpu(), logvars.cpu()), 1)
-		embeddings = torch.transpose(embeddings, 0, 1).cpu()
+			r = r.float().to(self._device)
+			
+			# Debug: Check input
+			if torch.isnan(r).any() or torch.isinf(r).any():
+				raise ValueError("Input contains NaN/Inf!")
+			
+			_, means, logvars = self._model.encoder(r)
+			
+			# Debug: Check encoder outputs
+			if torch.isnan(means).any() or torch.isnan(logvars).any():
+				print(f"NaN in means: {torch.isnan(means).any()}")
+				print(f"NaN in logvars: {torch.isnan(logvars).any()}")
+				print(f"Input stats: max={r.max()}, min={r.min()}, mean={r.mean()}")
+				breakpoint()  # Inspect further
+    
+			embeddings = torch.concat((means.cpu(), logvars.cpu()), 1)
+			embeddings = torch.transpose(embeddings, 0, 1)
+
+
+		#with torch.no_grad():
+	#		_,  means, logvars = self._model.encoder(r.float().to(self._device))
+#		embeddings = torch.concat((means.cpu(), logvars.cpu()), 1)
+#		embeddings = torch.transpose(embeddings, 0, 1).cpu()
 		#torch.cuda.empty_cache()
 
 		return embeddings
@@ -646,7 +675,7 @@ class VAEFeatureExtractor(FeatureEngine):
 			w_i = w[0, i*self._step:(i+1)*self._step]
 			#print(w.shape[1], i*self._step, (i+1)*self._step)
 			seq[:, i:(i+self._n_parallel)] = self._encode(w_i)
-
+		print('seq pre', seq.min(), seq.max())
 		return seq		
 
 
