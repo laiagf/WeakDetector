@@ -7,7 +7,7 @@ from weakDetector.utils.func import standardise
 from weakDetector.config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
-	def __init__(self, annotations_file, files_dir, df_standard=None, target_length=None, sources='all', channels='all', min_snr=0):
+	def __init__(self, annotations_file, files_dir, df_standard=None, target_length=None, sources='all', channels='all', min_snr=0, include_stds=False):
 		"""Initialise SpermWhaleDataset dataset.
 
 		Args:
@@ -24,7 +24,7 @@ class SpermWhaleDataset(Dataset):
 		self._target_length = target_length
 
 		self._channels = channels
-
+		self._include_stds = include_stds
 		#self._df_standard = df_standard
 
 		if isinstance(df_standard, pd.DataFrame):
@@ -91,7 +91,8 @@ class SpermWhaleDataset(Dataset):
 
 		t = torch.load(os.path.join(self._files_dir, fname))
 		t = torch.nan_to_num(t)
-		t = t[:int(t.shape[0]//2), :]
+		if not self._include_stds:
+			t = t[:int(t.shape[0]//2), :]
 		
 		dataset = '_'.join(fname.split('_')[:-2])
 		#print('a', t.isnan().any())
