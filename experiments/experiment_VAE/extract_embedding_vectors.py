@@ -1,4 +1,3 @@
-
 import pandas as pd
 import os
 import torch
@@ -17,7 +16,7 @@ from tqdm import tqdm
 
 def process_file(feat_extractor, f, wav_dir, out_dir):
 	if not os.path.exists(out_dir+f[:-3]+'pt'):
-		seq = feat_extractor(os.path.join(wav_dir, f))    
+		seq = feat_extractor(os.path.join(wav_dir, f))	
 		print(seq.max(), seq.min())
 		torch.save(seq, out_dir+f[:-3]+'pt')
 		del seq
@@ -34,14 +33,13 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 	cfg = OmegaConf.load(os.path.join(vae_dir, '.hydra/config.yaml'))
 
 	# TODO - have this function in utils
-	model = load_vae(cfg, feature_lengths[cfg.dataset])
+	model = load_vae(cfg, feature_lengths[cfg.dataset], device=device)
 	model.load_state_dict(torch.load(os.path.join(vae_dir,'trained_vae.pth'), map_location=device ), strict=False)
-
 	feat_extractor = VAEFeatureExtractor(window_size=window_lengths[cfg.dataset], 
 									  latent_size=cfg.model.latent_size, 
 									  input_type=cfg.dataset, 
 									  model=model,
-									  target_length=wavfile_length*48000, n_parallel=8)
+									  target_length=wavfile_length*48000, n_parallel=1, device=device)
 	
 	# TODO Improve csv links and names
 	if wavfile_length==4*60:
@@ -60,21 +58,19 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 
 
 	#Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
-	Parallel(n_jobs=8)(
+	Parallel(n_jobs=16)(
 		delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir) 
 		for f in tqdm(list(df.FileName))
 	)
-	#for k, f in enumerate(df.FileName):
-	#for f in tqdm(list(df.FileName)):
-	#	process_file(feat_extractor, f, WAV_PATH, out_dir) 
+
 
 
 if __name__=='__main__':
 	if torch.cuda.is_available():
-		device="cuda:0"
+		device="cuda"
 	else:
 		device="cpu"
-	print('eo')
+	print(f'Using device {device}')
 	# Find all directories with trained models
 	vae_paths = []
 	#TODO improve this path
@@ -84,15 +80,9 @@ if __name__=='__main__':
 		#for filename in [f for f in filenames if f.endswith(".log")]:
 		if 'trained_vae.pth' in filenames:
 			vae_paths.append(dirpath)
-	#print(vae_paths)
-	#vae_paths = ['/home/laia/Projects/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=short_wf,model.out_channels=8,scale=standardise/random_split,sources=all/24/random_state=1/']
-	#vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectrogram/random_split,sources=all/64/random_state=1/']
-	vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectral_profile/random_split,sources=all/64/random_state=1/']
+	#vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectral_profile/random_split,sources=all/64/random_state=1/']
 	for vae_path in vae_paths:
 		print(vae_path)
 		extract_embeddings(vae_path, device)
 		#extract_embeddings(vae_path, device, wavfile_length=30)
 
-
-	
-	
