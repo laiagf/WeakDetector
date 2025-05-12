@@ -64,7 +64,7 @@ def main(cfg):
 
 	optimiser = torch.optim.Adam(model.parameters(), lr=cfg.model.lr)
 	trainer = ClassifierTrainer(model=model, optimiser=optimiser, lr=cfg.model.lr,
-								loss_func = F.nll_loss, lr_decrease_rate=10)
+								loss_func = F.nll_loss, lr_decrease_rate=cfg.model.decrease_rate)
 	
 
 	trainer(train_loader, val_loader, cfg.model.n_epochs, device)
