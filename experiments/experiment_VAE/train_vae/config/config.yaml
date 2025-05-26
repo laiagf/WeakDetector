@@ -1,9 +1,9 @@
 hydra:
   run:
-    dir: ./run_outputs/${hydra.job.override_dirname}/${split}_split,sources=${train_sources}${model.latent_size}/random_state=${random_state}
+    dir: ./run_outputs/${hydra.job.override_dirname}/dataset=${dataset}/${split}_split,sources=${train_sources}${model.latent_size}/random_state=${random_state}
   sweep:
     dir: ./run_outputs/
-    subdir: ${hydra.job.override_dirname}/${split}_split,sources=${train_sources}/${model.latent_size}/random_state=${random_state}
+    subdir: ${hydra.job.override_dirname}/dataset=${dataset}/${split}_split,sources=${train_sources}/${model.latent_size}/random_state=${random_state}
   job:
     config:
       override_dirname:
@@ -17,6 +17,7 @@ hydra:
           - split
           - train_sources
           - model.parameters.lr
+          - dataset
 defaults:
   - model: vae_resnet
 
