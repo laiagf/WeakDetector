@@ -8,11 +8,10 @@ from weakDetector.models.tcn import TCN
 from weakDetector.datasets.spermWhaleDataset import SpermWhaleDataset
 from weakDetector.core.trainers import ClassifierTrainer
 from weakDetector.utils.dm import split_dataset
-from weakDetector.config import ROOT_DIR
+from weakDetector.config import CODE_DIR, DATA_PATH
 
-@hydra.main(config_path=ROOT_DIR+"experiments/experiment_HandcraftedFeatures/config", config_name="config.yaml",version_base=None)
+@hydra.main(config_path=CODE_DIR+"experiments/experiment_HandcraftedFeatures/config", config_name="config.yaml",version_base=None)
 def main(cfg):
-    
     # TODO maybe rethink thsi (put it elsewhere)
     if torch.cuda.is_available():
         device="cuda:0"
@@ -25,9 +24,24 @@ def main(cfg):
 		kernel_size=cfg.model.kernel_size, dropout=cfg.model.dropout)
     model.to(device)
 
+    
+    files_dir = os.path.join(DATA_PATH, f'{cfg.features}_Vectors/')
+    if cfg.features=='RMS':
+        files_dir = os.path.join(files_dir, f'RMS_{cfg.resolution}_{cfg.n_channels}band')
+        if cfg.n_channels>1:
+            files_dir +='s'
+
+    if cfg.resolution=='HR': 
+        window_size=512
+    elif cfg.resolution=='LR':
+        window_size=2048
+
+    target_length = int(cfg.target_seconds*48000/window_size)
+
+
     dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
-                                files_dir=cfg.files_dir,
-                                target_length=cfg.target_length,
+                                files_dir=files_dir,
+                                target_length=target_length,
                                 sources=cfg.train_sources,
                                 channels='all', min_snr=cfg.min_snr)
 
