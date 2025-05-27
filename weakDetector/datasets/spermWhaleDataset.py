@@ -7,7 +7,7 @@ from weakDetector.utils.func import standardise
 from weakDetector.config import ROOT_DIR
 
 class SpermWhaleDataset(Dataset):
-	def __init__(self, annotations_file, files_dir, df_standard=None, target_length=None, sources='all', channels='all', min_snr=0, include_stds=False):
+	def __init__(self, annotations_file, files_dir, df_standard=None, target_length=None, sources='all', channels='all', min_snr=0):
 		"""Initialise SpermWhaleDataset dataset.
 
 		Args:
@@ -24,8 +24,7 @@ class SpermWhaleDataset(Dataset):
 		self._target_length = target_length
 
 		self._channels = channels
-		self._include_stds = include_stds
-		#self._df_standard = df_standard
+
 
 		if isinstance(df_standard, pd.DataFrame):
 
@@ -91,11 +90,9 @@ class SpermWhaleDataset(Dataset):
 
 		t = torch.load(os.path.join(self._files_dir, fname))
 		t = torch.nan_to_num(t)
-		if not self._include_stds:
-			t = t[:int(t.shape[0]//2), :]
+
 		
 		dataset = '_'.join(fname.split('_')[:-2])
-		#print('a', t.isnan().any())
 
 		# cut and get selected columns
 		if self._channels!='all':
@@ -103,17 +100,12 @@ class SpermWhaleDataset(Dataset):
 
 		if self._target_length:
 			t = t[:, :self._target_length]
-		#print('b', t.isnan().any())
-		#standardise
-		#for i in range(t.shape[0]):
-		#	t[i, :] = standardise(t[i, :])
+
 		
 		t = self._row_standardise(t, dataset)
-		#print('c', t.isnan().any())
 		if self._target_length:
 			t = self._right_pad_if_necessary(t)
-		#print('d', t.isnan().any())
-		#print('---')
+
 
 		t = torch.nan_to_num(t)
 
@@ -154,7 +146,6 @@ class SpermWhaleDataset(Dataset):
 	def __getitem__(self, index):
 		label = self._df_annotations.Label[index]
 		sequence = self.load_item(self._df_annotations.FileName[index][:-3]+'pt')
-		#print(sequence.max(), sequence.min())
 		return sequence, int(label)
 	
 
