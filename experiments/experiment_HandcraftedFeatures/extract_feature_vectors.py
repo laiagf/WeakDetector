@@ -3,9 +3,10 @@ from weakDetector.core.featureEngines import HeuristicFeatureExtractor
 import pandas as pd
 import os
 import torch
-from weakDetector.config import ROOT_DIR, WAV_PATH
-
-
+from weakDetector.config import ROOT_DIR, WAV_PATH, DATA_PATH
+import datetime
+from joblib import Parallel, delayed
+from tqdm import tqdm
 def extract_rms():
     """Extract all RMS-only feature vectors.
     """
@@ -19,7 +20,7 @@ def extract_rms():
     }
 
     df = pd.read_csv(os.path.join(ROOT_DIR, 'files/4minDataset.csv'))
-    out_path = '/mnt/spinning1/RMS_Vectors/'
+    out_path = os.path.join(DATA_PATH, 'RMS_Vectors/')
 
     for res in resolutions.keys():
         for fs in frequency_bands.keys():
@@ -36,15 +37,22 @@ def extract_rms():
                     seq = feat_extractor(os.path.join(WAV_PATH,f))    
                     torch.save(seq, out_dir+f[:-3]+'pt')
 
+
+def extract_spectral_file(feat_extractor, f, out_dir):
+    print(f'{datetime.datetime.now()}: Processing file {f}')
+    if not os.path.exists(out_dir+f[:-3]+'pt'):
+        seq = feat_extractor(os.path.join(WAV_PATH,f))    
+        torch.save(seq, out_dir+f[:-3]+'pt')
+
 def extract_spectral():
     """Extract all spectral parameters feature vectors.
     """
 
-    resolutions = {'HR': 512, 'LR':2048}
+    resolutions = {'HR': 512,  'LR':2048}
 
 
     df = pd.read_csv(os.path.join(ROOT_DIR, 'files/4minDataset.csv'))
-    out_path = '/mnt/spinning1/Spectral_Vectors/'
+    out_path = os.path.join(DATA_PATH, 'Spectral_Vectors/')
 
     for res in resolutions.keys():
             out_dir = out_path
@@ -55,14 +63,16 @@ def extract_spectral():
                                 rms=True, rms_freqs=[1000, 20000], mean_freq=True,
                                 peak_freq=True, energy_sums=True, spectral_width=True)
             
-            for f in df.FileName:
-                if not os.path.exists(out_dir+f[:-3]+'pt'):
-                    seq = feat_extractor(os.path.join(WAV_PATH,f))    
-                    torch.save(seq, out_dir+f[:-3]+'pt')
+            #for f in df.FileName:
+            
+            Parallel(n_jobs=16)(
+                delayed(extract_spectral_file)(feat_extractor, f, out_dir) 
+                for f in tqdm(list(df.FileName))
+            )
 
 
 if __name__=='__main__':
-    extract_rms()
+    #extract_rms()
     extract_spectral()
                 
 
