@@ -1,9 +1,9 @@
 hydra:
   run:
-    dir: ./run_outputs/features=${features}/split=${split},train_sources=${train_sources},min_snr=${min_snr}/${resolution}_${n_channels}/${random_state}/${hydra.job.override_dirname}/
+    dir: ./run_outputs/${target_seconds}/features=${features}/split=${split},train_sources=${train_sources},min_snr=${min_snr}/${resolution}_${n_channels}/${random_state}/${hydra.job.override_dirname}/
   sweep:
     dir: ./run_outputs/
-    subdir: features=${features}/split=${split},train_sources=${train_sources},min_snr=${min_snr}/${resolution}_${n_channels}/${random_state}/${hydra.job.override_dirname}/
+    subdir: ${target_seconds}/features=${features}/split=${split},train_sources=${train_sources},min_snr=${min_snr}/${resolution}_${n_channels}/${random_state}/${hydra.job.override_dirname}/
   job:
     config:
       override_dirname:
@@ -15,6 +15,8 @@ hydra:
           - split
           - train_sources
           - min_snr
+          - target_seconds
+          - target_length
 
 
 
