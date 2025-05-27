@@ -46,8 +46,8 @@ def main(cfg):
 	dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
 								files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
 								target_length=cfg.target_length, ## TODO homogenise this
-								sources=cfg.train_sources, min_snr=cfg.min_snr, df_standard=df_standard)
-#								channels=cfg.channels)
+								sources=cfg.train_sources, min_snr=cfg.min_snr, df_standard=df_standard,
+								channels=[i for i in range(cfg_vae.model.latent_size)])
 
 	# split datasets
 	train_set, val_set, df_dataset = split_dataset(dataset, cfg)
