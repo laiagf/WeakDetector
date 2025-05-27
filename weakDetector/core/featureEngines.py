@@ -9,6 +9,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import torchvision.transforms as T
 
+
 from weakDetector.utils.func import renormalise, bandpass, moving_average
 
 #from abc import ABC, abstractmethod
@@ -299,22 +300,21 @@ class HeuristicFeatureExtractor(FeatureEngine):
 		features = []
 		if self._rms:
 			features  += self._compute_rms_values(w_i) 
-			#print('rms')
 		
+
 		if len(features)<self._latent_size:
 			# We need some freq and energy computatuins
 			s, freqs = self._compute_sfft_s(w_i, self._target_sr)
 
 		if self._peak_freq:
 			features += [self._compute_peak_freq(s, freqs)]
-			#print('peak freqs')
+
+
 		if self._mean_freq:
-			#print('mean freqs')
 			features += [self._compute_mean_freq(s, freqs)]
 		
+	
 		if self._energy_sums:
-			#print('features:', features)
-			#print('energy sums:', self._compute_energy_sums(s,freqs))
 			features+= self._compute_energy_sums(s, freqs)
 
 		if self._spectral_width:
