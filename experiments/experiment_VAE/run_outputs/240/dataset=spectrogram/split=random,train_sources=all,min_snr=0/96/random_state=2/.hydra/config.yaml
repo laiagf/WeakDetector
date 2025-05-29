@@ -1,0 +1,23 @@
+annotations_file: files/4minDataset.csv
+split: random
+train_sources: all
+dataset: spectrogram
+standard: true
+latent_size: 96
+target_sampling_rate: 48000
+target_seconds: 240
+target_length: 351
+min_snr: 0
+vae_random_state: 1
+random_state: 2
+model:
+  name: tcn
+  output_size: 2
+  batch_size: 8
+  n_epochs: 40
+  n_hid: 10
+  levels: 8
+  kernel_size: 20
+  dropout: 0.4
+  lr: 0.001
+  log_intervalus: 50

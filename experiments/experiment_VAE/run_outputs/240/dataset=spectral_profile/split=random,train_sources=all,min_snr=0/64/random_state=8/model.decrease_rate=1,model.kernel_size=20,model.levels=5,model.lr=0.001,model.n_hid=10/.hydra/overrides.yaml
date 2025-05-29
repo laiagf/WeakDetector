@@ -1,0 +1,6 @@
+- model.lr=0.001
+- model.kernel_size=20
+- model.levels=5
+- model.n_hid=10
+- model.decrease_rate=1
+- random_state=8

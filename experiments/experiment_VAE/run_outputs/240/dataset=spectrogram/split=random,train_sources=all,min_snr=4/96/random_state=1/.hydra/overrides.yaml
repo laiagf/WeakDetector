@@ -1,0 +1,5 @@
+- dataset=spectrogram
+- latent_size=96
+- random_state=1
+- model.n_epochs=40
+- min_snr=4
