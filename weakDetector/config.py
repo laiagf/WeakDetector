@@ -1,8 +1,8 @@
 
-ROOT_DIR = '/mnt/spinning1/WeakDetector/'
+ROOT_DIR = '/media/laia/FILES/WeakDetector/'
 
 CODE_DIR = '/home/laia/Projects/WeakDetector/'
 
-WAV_PATH = '/mnt/spinning1/processedAudioFiles/'
+WAV_PATH = '/media/laia/FILES/processedAudioFiles/'
 
 SOURCES = ['AS','BAL_1','BAL_2','BAL_3','CAL','CS','ICE','MED']

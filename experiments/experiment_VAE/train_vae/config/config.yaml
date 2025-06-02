@@ -23,10 +23,10 @@ defaults:
 
 csv_file: files/short_clips.csv
 
-train_sources: all
+train_sources: ['AS','BAL_1','BAL_2','BAL_3','CAL','CS','ICE'] #all
 min_snr: 0
 scale: normalise
-split: random
+split: by_source #random
 
 random_state: 1
 
