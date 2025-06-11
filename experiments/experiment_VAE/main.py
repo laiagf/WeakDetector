@@ -29,7 +29,7 @@ def main(cfg):
 
 	
 	# Load Dataset
-	vae_run_path = os.path.join(ROOT_DIR, f'experiments/experiment_VAE/train_vae/run_outputs/dataset={cfg.dataset}/{cfg.split}_split,sources={cfg.train_sources}/{cfg.latent_size}/random_state={cfg.vae_random_state}/') 	
+	vae_run_path = os.path.join(ROOT_DIR, f'experiments/experiment_VAE/train_vae/run_outputs/{cfg.target_seconds}/dataset={cfg.dataset}/{cfg.split}_split,sources={cfg.train_sources}/{cfg.latent_size}/random_state={cfg.vae_random_state}/') 	
 	cfg_vae_path = vae_run_path +'.hydra/config.yaml'
 	cfg_vae = OmegaConf.load(cfg_vae_path)
 
