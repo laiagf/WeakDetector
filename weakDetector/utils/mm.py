@@ -29,6 +29,17 @@ def load_vae(cfg, length=None, device='cpu'):
 	return model
 
 
+def get_target_length(cfg):
+	dataset_name = cfg['dataset']
+
+	if dataset_name=='long_wf':
+		length=2048
+	if dataset_name=='short_wf' or dataset_name=='spectral_profile':
+		length=512		
+	if dataset_name=='spectrogram':
+		length = 512*256
+	return int(cfg['target_seconds']*48000/length)
+
 def find_length(cfg):
 	dataset_name = cfg['dataset']
 	print(dataset_name)

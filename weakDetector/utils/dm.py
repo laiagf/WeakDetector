@@ -3,6 +3,8 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 from weakDetector.datasets.spermWhaleDataset import SpermWhaleDataset
 from weakDetector.datasets.clickDataset import ClickDataset
+from weakDetector.utils.mm import get_target_length
+
 import os
 import torch
 
@@ -67,7 +69,7 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
 
 		val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
 								files_dir=dataset.files_dir,
-								target_length=cfg.target_length,
+								target_length=get_target_length(cfg),
 								sources=val_set_sources, min_snr=cfg.min_snr)
 							  #  channels=cfg.channels) TODO
 		

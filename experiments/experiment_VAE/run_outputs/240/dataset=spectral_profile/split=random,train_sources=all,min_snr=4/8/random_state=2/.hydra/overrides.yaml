@@ -1,5 +1,0 @@
-- dataset=spectral_profile
-- latent_size=8
-- random_state=2
-- model.n_epochs=40
-- min_snr=4
