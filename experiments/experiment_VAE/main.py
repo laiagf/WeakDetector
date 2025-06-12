@@ -14,6 +14,7 @@ from weakDetector.datasets.spermWhaleDataset import SpermWhaleDataset
 from weakDetector.core.trainers import ClassifierTrainer
 from weakDetector.utils.dm import split_dataset
 from weakDetector.config import ROOT_DIR, SOURCES, CODE_DIR
+from weakDetector.utils.mm import get_target_length
 
 
 
@@ -45,7 +46,7 @@ def main(cfg):
 
 	dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
 								files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
-								target_length=cfg.target_length, ## TODO homogenise this
+								target_length=get_target_length(cfg), 
 								sources=cfg.train_sources, min_snr=cfg.min_snr, df_standard=df_standard,
 								channels=[i for i in range(cfg_vae.model.latent_size)])
 

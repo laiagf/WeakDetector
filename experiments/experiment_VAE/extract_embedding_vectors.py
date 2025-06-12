@@ -55,11 +55,16 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 	if not os.path.exists(out_dir):
 		os.mkdir(out_dir)
 
+	# TODO arreglar aqeust parche
+	if wavfile_length==4*60:
+		wav_dir = WAV_PATH
+	else:
+		wav_dir = WAV_PATH[:-1]+'30/'
 
 
 	#Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
 	Parallel(n_jobs=16)(
-		delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir) 
+		delayed(process_file)(feat_extractor, f, wav_dir, out_dir) 
 		for f in tqdm(list(df.FileName))
 	)
 
@@ -74,7 +79,7 @@ if __name__=='__main__':
 	# Find all directories with trained models
 	vae_paths = []
 	#TODO improve this path
-	for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs/")):
+	for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs/dataset=spectrogram/")):
 	#for  dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs_old/dataset=spectrogram,split=random,train_sources=all/")):
 
 		#for filename in [f for f in filenames if f.endswith(".log")]:
@@ -83,6 +88,6 @@ if __name__=='__main__':
 	#vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectral_profile/random_split,sources=all/64/random_state=1/']
 	for vae_path in vae_paths:
 		print(vae_path)
-		extract_embeddings(vae_path, device)
-		#extract_embeddings(vae_path, device, wavfile_length=30)
+		#extract_embeddings(vae_path, device)
+		extract_embeddings(vae_path, device, wavfile_length=30)
 

@@ -1,8 +1,0 @@
-- dataset=short_wf
-- split=random
-- train_sources=[AS]
-- vae_random_state=1
-- random_state=0
-- latent_size=64
-- model.n_epochs=40
-- min_snr=0

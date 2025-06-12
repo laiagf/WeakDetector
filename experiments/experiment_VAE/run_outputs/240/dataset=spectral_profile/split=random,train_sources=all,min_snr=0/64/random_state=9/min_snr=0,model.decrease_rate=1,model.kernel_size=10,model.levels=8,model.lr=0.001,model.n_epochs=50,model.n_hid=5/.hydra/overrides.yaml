@@ -1,7 +1,0 @@
-- min_snr=0
-- model.decrease_rate=1
-- model.kernel_size=10
-- model.levels=8
-- model.n_hid=5
-- model.lr=0.001
-- model.n_epochs=50

@@ -20,4 +20,5 @@ model:
   kernel_size: 20
   dropout: 0.4
   lr: 0.001
+  decrease_rate: 1
   log_intervalus: 50

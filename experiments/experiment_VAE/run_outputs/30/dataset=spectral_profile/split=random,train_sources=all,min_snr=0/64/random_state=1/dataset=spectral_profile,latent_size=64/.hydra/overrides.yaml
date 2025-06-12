@@ -1,0 +1,4 @@
+- dataset=spectral_profile
+- target_seconds=30
+- target_length=22500
+- latent_size=64

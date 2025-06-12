@@ -55,7 +55,7 @@ def extract_spectral():
     out_path = os.path.join(DATA_PATH, 'Spectral_Vectors/')
 
     for res in resolutions.keys():
-            out_dir = out_path
+            out_dir = out_path + f'{res}/'
             if not os.path.exists(out_dir):
                 os.mkdir(out_dir)
 

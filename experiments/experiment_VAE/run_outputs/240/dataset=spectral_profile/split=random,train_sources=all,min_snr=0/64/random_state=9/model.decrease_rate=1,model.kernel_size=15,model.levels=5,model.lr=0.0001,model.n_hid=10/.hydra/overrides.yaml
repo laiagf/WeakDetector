@@ -1,5 +1,0 @@
-- model.lr=0.0001
-- model.kernel_size=15
-- model.levels=5
-- model.n_hid=10
-- model.decrease_rate=1
