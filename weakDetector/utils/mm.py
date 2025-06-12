@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from weakDetector.models.vae_1d import VAE_1D
 from weakDetector.models.vae_resnet import VAE_ResNet
-from weakDetector.config import ROOT_DIR
+from weakDetector.config import ROOT_DIR, SOURCES
 from weakDetector.utils.func import standardise, renormalise
 
 def load_vae(cfg, length=None, device='cpu'):
@@ -94,8 +94,8 @@ def get_embedding_standardisation(run_path, device):
 
 	dfs = []
 
-	sources = list(set(df.Dataset))
-
+	#sources = list(set(df.Dataset))
+	sources = SOURCES
 	for s in sources:
 		embeddings = []
 		for i in tqdm(df.index[df.Dataset==s], desc='standardising'):
