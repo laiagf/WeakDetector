@@ -7,3 +7,4 @@ experiments/experiment_VAE/train_vae/run_outputs_old/
 #experiments/experiment_VAE/run_outputs/
 experiments/experiment_HandcraftedFeatures/run_outputs/
 debug.ipynb
+experiments/experiment_VAE/run_outputs/240/pre_target_length/
