@@ -37,7 +37,9 @@ def get_target_length(cfg):
 	if dataset_name=='short_wf' or dataset_name=='spectral_profile':
 		length=512		
 	if dataset_name=='spectrogram':
-		length = 512*256
+		length = 128*256
+	n_samples = int(cfg['target_seconds']*48000)
+
 	return int(cfg['target_seconds']*48000/length)
 
 def find_length(cfg):
