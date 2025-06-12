@@ -75,9 +75,9 @@ def get_embedding_standardisation(run_path, device):
 	model.eval()
 
 	df = pd.read_csv(ROOT_DIR+'/files/short_clips.csv')
-	if cfg_ae['train_sources']!='all':
-		df = df[df.Dataset.isin(cfg_ae['train_sources'])]
-		df = df.reset_index(drop=True)
+	#if cfg_ae['train_sources']!='all':
+	#	df = df[df.Dataset.isin(cfg_ae['train_sources'])]
+	#	df = df.reset_index(drop=True)
 
 	# only training clips
 	# Generate the indices for splitting
@@ -99,6 +99,7 @@ def get_embedding_standardisation(run_path, device):
 	for s in sources:
 		embeddings = []
 		for i in tqdm(df.index[df.Dataset==s], desc='standardising'):
+			
 			t = torch.load(tensor_dir+df.Tensor_name[i])
 			t = torch.nan_to_num(t)		
 
