@@ -10,7 +10,10 @@ hydra:
         exclude_keys:
           - random_state
           - target_seconds
-          - target_length
+          - dataset 
+          - split 
+          - latent_size
+          - train_sources
 
 
 
@@ -40,10 +43,10 @@ model:
   name: tcn
   output_size: 2
   batch_size: 8
-  n_epochs: 25
-  n_hid: 15
+  n_epochs: 20
+  n_hid: 10
   levels: 8
-  kernel_size: 10
+  kernel_size: 20
   dropout: 0.4
   lr: 0.001
   decrease_rate: 1
