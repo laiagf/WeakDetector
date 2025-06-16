@@ -87,8 +87,11 @@ class SpermWhaleDataset(Dataset):
 		Returns:
 			_type_: _description_
 		"""
-
-		t = torch.load(os.path.join(self._files_dir, fname))
+		try:
+			t = torch.load(os.path.join(self._files_dir, fname))
+		except Exception:
+			print(os.path.join(self._files_dir, fname))
+			raise Exception(f"Error loading file {fname} in {self._files_dir}")
 		t = torch.nan_to_num(t)
 
 		
@@ -97,7 +100,6 @@ class SpermWhaleDataset(Dataset):
 		# cut and get selected columns
 		if self._channels!='all':
 			t = t[self._channels, :]
-
 		if self._target_length:
 			t = t[:, :self._target_length]
 
