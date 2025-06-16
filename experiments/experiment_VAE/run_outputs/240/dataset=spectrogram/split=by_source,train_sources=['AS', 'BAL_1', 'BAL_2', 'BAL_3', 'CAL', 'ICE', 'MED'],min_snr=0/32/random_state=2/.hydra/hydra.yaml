@@ -112,14 +112,14 @@ hydra:
     hydra:
     - hydra.mode=MULTIRUN
     task:
-    - train_sources=[AS,BAL_1,BAL_2,BAL_3,CAL,ICE,MED],[AS,BAL_1,BAL_2,BAL_3,CAL,CS,MED],[AS,BAL_1,BAL_2,BAL_3,CAL,CS,ICE]
-    - random_state=0,2
+    - train_sources=[AS,BAL_1,BAL_2,BAL_3,CAL,ICE,MED]
+    - random_state=2
   job:
     name: main
     chdir: null
     override_dirname: ''
-    id: ???
-    num: ???
+    id: '1'
+    num: 1
     config_name: config.yaml
     env_set: {}
     env_copy: []
@@ -148,7 +148,8 @@ hydra:
     - path: ''
       schema: structured
       provider: schema
-    output_dir: ???
+    output_dir: /home/laia/Projects/WeakDetector/experiments/experiment_VAE/run_outputs/240/dataset=spectrogram/split=by_source,train_sources=['AS',
+      'BAL_1', 'BAL_2', 'BAL_3', 'CAL', 'ICE', 'MED'],min_snr=0/32/random_state=2
     choices:
       hydra/env: default
       hydra/callbacks: null
@@ -160,33 +161,3 @@ hydra:
       hydra/launcher: basic
       hydra/output: default
   verbose: false
-annotations_file: files/4minDataset.csv
-split: by_source
-train_sources:
-- AS
-- BAL_1
-- BAL_2
-- BAL_3
-- CAL
-- CS
-- ICE
-dataset: spectrogram
-standard: true
-latent_size: 32
-target_sampling_rate: 48000
-target_seconds: 240
-min_snr: 0
-vae_random_state: 1
-random_state: 1
-model:
-  name: tcn
-  output_size: 2
-  batch_size: 8
-  n_epochs: 20
-  n_hid: 10
-  levels: 8
-  kernel_size: 20
-  dropout: 0.4
-  lr: 0.001
-  decrease_rate: 1
-  log_intervalus: 50
