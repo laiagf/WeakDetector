@@ -17,7 +17,15 @@ class SpermWhaleDataset(Dataset):
 			sources (str, optional): _description_. Defaults to 'all'.
 			channels (str, optional): _description_. Defaults to 'all'.
 		"""
-		self._df_annotations = self._load_annotations(annotations_file, sources, min_snr)
+
+		if isinstance(annotations_file, pd.DataFrame):
+			self._df_annotations = annotations_file
+			if min(self._df_annotations.SNR_999)<min_snr:
+				raise ValueError(f"Annotations dataframe must have SNR_999 >= {min_snr}.")
+			if sources!='all' and not all(s in self._df_annotations.Dataset.unique() for s in sources):
+				raise ValueError(f"Annotations dataframe must have Dataset in {sources}.")
+		else:
+			self._df_annotations = self._load_annotations(annotations_file, sources, min_snr)
 
 		self._files_dir = files_dir
 
