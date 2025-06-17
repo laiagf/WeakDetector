@@ -44,6 +44,7 @@ def main(cfg):
 	else:
 		df_standard=None
 
+
 	dataset = SpermWhaleDataset(annotations_file=cfg.annotations_file,
 								files_dir=os.path.join(vae_run_path, 'embeddings/'+str(cfg.target_seconds)),
 								target_length=get_target_length(cfg), 

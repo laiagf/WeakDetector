@@ -19,15 +19,15 @@ annotations_file: files/4minDataset.csv
 #run_path: 'dataset=spectrogram,split=by_source,train_sources=[BAL_1,BAL_2,BAL_3,CAL,AS,MED,CS]/'
 #run_path: 'dataset=spectrogram,split=random,train_sources=all/'
 #run_path: 'split=by_source,train_sources=[CS,IFAW,ICE,DCLDE,GP]/'
-split: by_source
+split: random
 
-train_sources: [AS,BAL_1,BAL_2,BAL_3,CAL,CS,ICE]
-#train_sources: all
-dataset: spectrogram
+#train_sources: [AS,BAL_1,BAL_2,BAL_3,CAL,CS,ICE]
+train_sources: all
+dataset: spectral_profile
 
 standard: True
 
-latent_size: 32
+latent_size: 64
 
 target_sampling_rate: 48000
 target_seconds: 240
