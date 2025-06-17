@@ -53,8 +53,6 @@ def main(cfg):
 
 	# split datasets
 	train_set, val_set, df_dataset = split_dataset(dataset, cfg)
-	
-
 	print(f"AE train sources were {cfg_vae.train_sources} and AE split was {cfg_vae.split}")
 
 

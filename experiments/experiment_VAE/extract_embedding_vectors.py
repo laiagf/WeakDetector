@@ -16,10 +16,13 @@ from tqdm import tqdm
 
 def process_file(feat_extractor, f, wav_dir, out_dir):
 	if not os.path.exists(out_dir+f[:-3]+'pt'):
-		seq = feat_extractor(os.path.join(wav_dir, f))	
-		print(seq.max(), seq.min())
-		torch.save(seq, out_dir+f[:-3]+'pt')
-		del seq
+		try:
+			seq = feat_extractor(os.path.join(wav_dir, f))	
+			print(seq.max(), seq.min())
+			torch.save(seq, out_dir+f[:-3]+'pt')
+			del seq
+		except Exception as e:
+			print(f'Error processing {f}: {e}')
 	#torch.cuda.empty_cache()
 
 
@@ -61,9 +64,9 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 	else:
 		wav_dir = WAV_PATH[:-1]+'30/'
 
-
+	print(wav_dir)
 	#Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
-	Parallel(n_jobs=16)(
+	Parallel(n_jobs=2)(
 		delayed(process_file)(feat_extractor, f, wav_dir, out_dir) 
 		for f in tqdm(list(df.FileName))
 	)
@@ -89,5 +92,5 @@ if __name__=='__main__':
 	for vae_path in vae_paths:
 		print(vae_path)
 		#extract_embeddings(vae_path, device)
-		extract_embeddings(vae_path, device, wavfile_length=30)
+		extract_embeddings(vae_path, device, wavfile_length=240)
 

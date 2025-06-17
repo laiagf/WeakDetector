@@ -7,7 +7,7 @@ from weakDetector.utils.mm import get_target_length
 
 import os
 import torch
-
+import copy
 from weakDetector.config import ROOT_DIR, SOURCES
 
 
@@ -67,12 +67,17 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, random_prop = 0.7):
 		val_set_sources = [s for s in SOURCES if s not in cfg['train_sources']]
 		print('Val sources', val_set_sources)
 
-		val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
-								files_dir=dataset.files_dir,
-								target_length=get_target_length(cfg),
-								sources=val_set_sources, min_snr=cfg.min_snr)
-							  #  channels=cfg.channels) TODO
+		#val_set = SpermWhaleDataset(annotations_file=cfg.annotations_file,
+		#						files_dir=dataset.files_dir,
+		#						target_length=get_target_length(cfg),
+		#						sources=val_set_sources, min_snr=cfg.min_snr,
+		#						channels=dataset._channels) 
 		
+		val_set = copy.deepcopy(train_set)
+
+		val_set.annotations = val_set._load_annotations(cfg.annotations_file, val_set_sources, cfg.min_snr)
+
+
 		df_train = train_set.annotations
 		df_val = val_set.annotations
 		df_train['training'] = 1

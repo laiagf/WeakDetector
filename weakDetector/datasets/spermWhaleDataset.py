@@ -17,7 +17,15 @@ class SpermWhaleDataset(Dataset):
 			sources (str, optional): _description_. Defaults to 'all'.
 			channels (str, optional): _description_. Defaults to 'all'.
 		"""
-		self._df_annotations = self._load_annotations(annotations_file, sources, min_snr)
+
+		if isinstance(annotations_file, pd.DataFrame):
+			self._df_annotations = annotations_file
+			if min(self._df_annotations.SNR_999)<min_snr:
+				raise ValueError(f"Annotations dataframe must have SNR_999 >= {min_snr}.")
+			if sources!='all' and not all(s in self._df_annotations.Dataset.unique() for s in sources):
+				raise ValueError(f"Annotations dataframe must have Dataset in {sources}.")
+		else:
+			self._df_annotations = self._load_annotations(annotations_file, sources, min_snr)
 
 		self._files_dir = files_dir
 
@@ -87,8 +95,11 @@ class SpermWhaleDataset(Dataset):
 		Returns:
 			_type_: _description_
 		"""
-
-		t = torch.load(os.path.join(self._files_dir, fname))
+		try:
+			t = torch.load(os.path.join(self._files_dir, fname))
+		except Exception:
+			print(os.path.join(self._files_dir, fname))
+			raise Exception(f"Error loading file {fname} in {self._files_dir}")
 		t = torch.nan_to_num(t)
 
 		
@@ -97,7 +108,6 @@ class SpermWhaleDataset(Dataset):
 		# cut and get selected columns
 		if self._channels!='all':
 			t = t[self._channels, :]
-
 		if self._target_length:
 			t = t[:, :self._target_length]
 

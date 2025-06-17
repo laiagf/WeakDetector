@@ -261,34 +261,33 @@ class ClassifierTrainer(Trainer):
         targets = []
         
         with torch.no_grad():
-            for data, target in val_loader: # Iterate over val_loader
-                # Send data and labels to device, and reshape data
+            for data, target in val_loader:  # Iterate over val_loader
+                # Send data and labels to device
                 data = data.to(device)
                 target = target.to(device)
-           #     data = data.view(-1, data.shape[0], data.shape[1])
 
                 # Get model outputs
                 output = self._model(data)
-                # Add batch loss to epoch loss 
-                val_loss += self._loss_func(output, target, size_average=False).item()
+                # Add batch loss to epoch loss
+                val_loss += self._loss_func(output, target, reduction='sum').item()
                 # Compute number of correct predictions
                 pred = output.data.max(1, keepdim=True)[1]
-                correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+                correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
                 # Add outputs and targets to running counters
-                outputs.append(pred.cpu())
-                targets.append(target.data.view_as(pred).cpu())			
+                outputs.append(pred.cpu().numpy())
+                targets.append(target.data.view_as(pred).cpu().numpy())
 
-            # Compute batch performance metrics
+            # Compute epoch performance metrics
             val_loss /= len(val_loader.dataset)
-
             val_acc = 100. * correct / len(val_loader.dataset)
-            outputs = np.concatenate(outputs)
-            targets = np.concatenate(targets)
 
-            f1 = f1_score(y_pred=outputs,y_true=targets, average='weighted')
+            # Flatten outputs and targets for metrics computation
+            outputs = np.concatenate(outputs).flatten()
+            targets = np.concatenate(targets).flatten()
+
+            f1 = f1_score(y_pred=outputs, y_true=targets, average='weighted')
             precision = precision_score(y_pred=outputs, y_true=targets, average='weighted')
-            recall = recall_score(y_pred=outputs, y_true=targets, average='weighted')
-
+            recall = recall_score(y_pred=outputs, y_true=targets, average='weighted')            
             self._val_accuracies.append(val_acc)
             self._val_fscores.append(f1)
             self._val_recalls.append(recall)
@@ -301,6 +300,4 @@ class ClassifierTrainer(Trainer):
             f'Validation average loss :{val_loss} \n'
             f'Accuracy: {correct}/{len(val_loader.dataset)} {val_acc}\n'
             f'F1: {f1} \t Recall:{recall} \t Precision: {precision}\n')
-
-            
-        return 
+        return #val_loss, val_acc, f1, precision
