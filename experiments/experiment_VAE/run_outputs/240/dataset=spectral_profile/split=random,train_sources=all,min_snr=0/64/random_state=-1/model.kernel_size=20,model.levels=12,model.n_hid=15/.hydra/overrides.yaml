@@ -1,0 +1,4 @@
+- random_state=-1
+- model.n_hid=15
+- model.levels=12
+- model.kernel_size=20

@@ -1,0 +1,8 @@
+- random_state=-2
+- model.n_hid=8
+- model.levels=8
+- model.kernel_size=10
+- train_sources=all
+- split=random
+- dataset=spectral_profile
+- latent_size=64
