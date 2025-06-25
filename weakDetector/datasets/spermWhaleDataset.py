@@ -20,7 +20,9 @@ class SpermWhaleDataset(Dataset):
 
 		if isinstance(annotations_file, pd.DataFrame):
 			self._df_annotations = annotations_file
-			if min(self._df_annotations.SNR_999)<min_snr:
+			if min_snr!=0 and 'SNR_999' not in self._df_annotations.columns:
+				raise ValueError(f"Min SNR specified ({min_snr}) but SNR_999 not in annotations file columns")
+			if min_snr>0 and min(self._df_annotations.SNR_999)<min_snr:
 				raise ValueError(f"Annotations dataframe must have SNR_999 >= {min_snr}.")
 			if sources!='all' and not all(s in self._df_annotations.Dataset.unique() for s in sources):
 				raise ValueError(f"Annotations dataframe must have Dataset in {sources}.")
@@ -59,7 +61,9 @@ class SpermWhaleDataset(Dataset):
 			_type_: _description_
 		"""
 		df_annotations = pd.read_csv(os.path.join(ROOT_DIR, annotations_file))
-		df_annotations = df_annotations[df_annotations.SNR_999>=min_snr].reset_index(drop=True)
+		
+		if min_snr>0:
+			df_annotations = df_annotations[df_annotations.SNR_999>=min_snr].reset_index(drop=True)
 
 		if sources!='all':
 			df_annotations = df_annotations[df_annotations.Dataset.isin(sources)].reset_index(drop=True)
