@@ -675,7 +675,7 @@ class VAEFeatureExtractor(FeatureEngine):
 			w_i = w[0, i*self._step:(i+1)*self._step]
 			#print(w.shape[1], i*self._step, (i+1)*self._step)
 			seq[:, i:(i+self._n_parallel)] = self._encode(w_i)
-		print('seq pre', seq.min(), seq.max())
+		#print('seq pre', seq.min(), seq.max())
 		return seq		
 
 
