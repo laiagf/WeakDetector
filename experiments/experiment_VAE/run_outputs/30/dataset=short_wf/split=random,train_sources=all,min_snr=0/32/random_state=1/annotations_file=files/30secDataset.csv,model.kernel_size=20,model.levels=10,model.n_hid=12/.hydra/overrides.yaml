@@ -1,0 +1,8 @@
+- annotations_file=files/30secDataset.csv
+- target_seconds=30
+- dataset=short_wf
+- random_state=1
+- model.n_hid=12
+- model.levels=10
+- model.kernel_size=20
+- latent_size=32
