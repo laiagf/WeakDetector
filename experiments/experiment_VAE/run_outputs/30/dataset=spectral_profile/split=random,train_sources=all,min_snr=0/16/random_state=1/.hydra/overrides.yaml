@@ -1,0 +1,4 @@
+- random_state=1
+- dataset=spectral_profile
+- latent_size=16
+- target_seconds=30

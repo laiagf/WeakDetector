@@ -1,0 +1,8 @@
+- dataset=long_wf
+- target_seconds=30
+- annotations_file=files/30secDataset.csv
+- random_state=0
+- model.n_hid=12
+- model.levels=10
+- model.kernel_size=20
+- latent_size=32

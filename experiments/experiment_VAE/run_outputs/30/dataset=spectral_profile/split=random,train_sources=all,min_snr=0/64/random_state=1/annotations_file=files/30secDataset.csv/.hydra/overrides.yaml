@@ -1,0 +1,4 @@
+- target_seconds=30
+- random_state=1
+- latent_size=64
+- annotations_file=files/30secDataset.csv

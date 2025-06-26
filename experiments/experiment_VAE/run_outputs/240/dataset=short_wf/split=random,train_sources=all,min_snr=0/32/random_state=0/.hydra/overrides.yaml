@@ -1,0 +1,3 @@
+- dataset=short_wf
+- latent_size=32
+- random_state=0

@@ -1,0 +1,5 @@
+- random_state=-1
+- model.n_hid=8
+- model.levels=8
+- model.kernel_size=10
+- train_sources=all
