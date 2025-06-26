@@ -20,11 +20,11 @@ hydra:
 
 
 
-features: 'RMS'
+features: 'Spectral'
 
 n_channels: 5
 
-resolution: 'LR'
+resolution: 'HR'
 
 annotations_file: files/4minDataset.csv
 
