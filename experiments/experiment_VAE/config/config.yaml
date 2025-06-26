@@ -44,8 +44,8 @@ model:
   output_size: 2
   batch_size: 8
   n_epochs: 20
-  n_hid: 10
-  levels: 8
+  n_hid: 12
+  levels: 10
   kernel_size: 20
   dropout: 0.4
   lr: 0.001

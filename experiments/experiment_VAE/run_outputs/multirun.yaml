@@ -112,12 +112,18 @@ hydra:
     hydra:
     - hydra.mode=MULTIRUN
     task:
-    - train_sources=[AS,BAL_1,BAL_2,BAL_3,CAL,ICE,MED],[AS,BAL_1,BAL_2,BAL_3,CAL,CS,MED],[AS,BAL_1,BAL_2,BAL_3,CAL,CS,ICE]
-    - random_state=0,2
+    - annotations_file=files/30secDataset.csv
+    - target_seconds=30
+    - dataset=long_wf
+    - random_state=1,2
+    - model.n_hid=12
+    - model.levels=10
+    - model.kernel_size=20
+    - latent_size=24,32,48,64
   job:
     name: main
     chdir: null
-    override_dirname: ''
+    override_dirname: annotations_file=files/30secDataset.csv,model.kernel_size=20,model.levels=10,model.n_hid=12
     id: ???
     num: ???
     config_name: config.yaml
@@ -160,21 +166,14 @@ hydra:
       hydra/launcher: basic
       hydra/output: default
   verbose: false
-annotations_file: files/4minDataset.csv
-split: by_source
-train_sources:
-- AS
-- BAL_1
-- BAL_2
-- BAL_3
-- CAL
-- CS
-- ICE
-dataset: spectrogram
+annotations_file: files/30secDataset.csv
+split: random
+train_sources: all
+dataset: long_wf
 standard: true
-latent_size: 32
+latent_size: 64
 target_sampling_rate: 48000
-target_seconds: 240
+target_seconds: 30
 min_snr: 0
 vae_random_state: 1
 random_state: 1
@@ -183,8 +182,8 @@ model:
   output_size: 2
   batch_size: 8
   n_epochs: 20
-  n_hid: 10
-  levels: 8
+  n_hid: 12
+  levels: 10
   kernel_size: 20
   dropout: 0.4
   lr: 0.001
