@@ -90,7 +90,7 @@ class SpermWhaleDataset(Dataset):
 	def __len__(self):
 		return len(self._df_annotations)
 	
-	def load_item(self, fname):
+	def load_item(self, fname, files_dir=None):
 		"""Load sequence of extracted features.
 
 		Args:
@@ -99,11 +99,13 @@ class SpermWhaleDataset(Dataset):
 		Returns:
 			_type_: _description_
 		"""
+		if files_dir is None:
+			files_dir = self._files_dir
 		try:
-			t = torch.load(os.path.join(self._files_dir, fname))
+			t = torch.load(os.path.join(files_dir, fname))
 		except Exception:
-			print(os.path.join(self._files_dir, fname))
-			raise Exception(f"Error loading file {fname} in {self._files_dir}")
+			print(os.path.join(files_dir, fname))
+			raise Exception(f"Error loading file {fname} in {files_dir}")
 		t = torch.nan_to_num(t)
 
 		

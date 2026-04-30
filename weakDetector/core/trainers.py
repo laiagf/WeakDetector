@@ -199,7 +199,7 @@ class AETrainer(Trainer):
 
 class ClassifierTrainer(Trainer):
 
-    def __init__(self, model, optimiser, lr, loss_func=F.nll_loss, lr_decrease_rate=10, log_interval=2000):
+    def __init__(self, model, optimiser, lr, loss_func=F.nll_loss, lr_decrease_rate=1, log_interval=2000):
 
         super().__init__(model, optimiser, lr,loss_func, lr_decrease_rate, log_interval)
         

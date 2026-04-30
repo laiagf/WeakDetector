@@ -7,7 +7,7 @@ from weakDetector.utils.func import moving_average, renormalise, standardise, id
 from weakDetector.config import ROOT_DIR
 
 class ClickDataset(Dataset):
-	def __init__(self, dataset_features, csv_file, tensor_dir, scale_method='normalise', smooth=False, channels='all', sources='all', split_files=None):
+	def __init__(self, dataset_features, csv_file, tensor_dir, scale_method='normalise', smooth=False, channels='all', sources='all', split_files=None, min_snr=None):
 		"""Initialize ClickDataset dataset.
 
 		Args:
@@ -57,7 +57,8 @@ class ClickDataset(Dataset):
 		else:
 			print(f'Scale method {f} not implemented. Defaulting to identity instead.')
 			self._scale = identity
-
+		if min_snr is not None and min_snr>0:
+			print(f'Min SNR not implemented. Defaulting to 0 instead.')
 	@property
 	def feature_length(self):
 		"""
