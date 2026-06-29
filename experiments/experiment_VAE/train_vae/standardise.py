@@ -18,6 +18,7 @@ if __name__=='__main__':
     for p in latent_paths:
         rs_paths += [os.path.join(p, r) for r in os.listdir(p) if os.path.isdir(os.path.join(p, r) )]
     #run_path = os.path.join(ROOT_DIR,'experiments/experiment_VAE/train_vae/run_outputs/'+run_dir)
+    #print(rs_paths)
     for run_path in rs_paths:
         if ('trained_vae.pth' in os.listdir(run_path)) and ('standard_dict.csv' not in os.listdir(run_path)):
             get_embedding_standardisation(run_path, 'cuda')
