@@ -18,12 +18,10 @@ def process_file(feat_extractor, f, wav_dir, out_dir):
 	if not os.path.exists(out_dir+f[:-3]+'pt'):
 		try:
 			seq = feat_extractor(os.path.join(wav_dir, f))	
-			#print(seq.max(), seq.min())
 			torch.save(seq, out_dir+f[:-3]+'pt')
 			del seq
 		except Exception as e:
 			print(f'Error processing {f}: {e}')
-	#torch.cuda.empty_cache()
 
 
 def extract_embeddings(vae_dir, device, wavfile_length=4*60):
@@ -58,7 +56,6 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 	if not os.path.exists(out_dir):
 		os.mkdir(out_dir)
 
-	# TODO arreglar aqeust parche
 	if wavfile_length==4*60:
 		wav_dir = WAV_PATH
 	else:
@@ -68,13 +65,9 @@ def extract_embeddings(vae_dir, device, wavfile_length=4*60):
 	for f in list(df.FileName):
 		if not os.path.exists(out_dir+f[:-3]+'pt'):
 			files_2_process.append(f)
-	#Parallel(n_jobs=8)(delayed(process_file)(feat_extractor, f, WAV_PATH, out_dir)  for f in list(df.FileName))
-	Parallel(n_jobs=8)(
-		delayed(process_file)(feat_extractor, f, wav_dir, out_dir) 
-		for f in tqdm(files_2_process)
-	)
-	#for f in tqdm(files_2_process):
-	#	process_file(feat_extractor, f, wav_dir, out_dir) 
+
+	for f in tqdm(files_2_process):
+		process_file(feat_extractor, f, wav_dir, out_dir) 
 
 if __name__=='__main__':
 	if torch.cuda.is_available():
@@ -85,15 +78,11 @@ if __name__=='__main__':
 	# Find all directories with trained models
 	vae_paths = []
 	#TODO improve this path
-	for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs/")):
-	#for  dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs_old/dataset=spectrogram,split=random,train_sources=all/")):
-
-		#for filename in [f for f in filenames if f.endswith(".log")]:
+	for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT_DIR, "experiments/experiment_VAE/train_vae/run_outputs/")):i
 		if 'trained_vae.pth' in filenames:
 			vae_paths.append(dirpath)
-	#vae_paths = ['/mnt/spinning1/WeakDetector/experiments/experiment_VAE/train_vae/run_outputs/dataset=spectral_profile/random_split,sources=all/64/random_state=1/']
+
 	for vae_path in vae_paths:
-		print(vae_path)
-		#extract_embeddings(vae_path, device)
-		extract_embeddings(vae_path, device, wavfile_length=30)
+		extract_embeddings(vae_path, device)
+		#extract_embeddings(vae_path, device, wavfile_length=30)
 
