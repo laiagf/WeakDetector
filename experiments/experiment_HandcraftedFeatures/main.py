@@ -25,7 +25,7 @@ def main(cfg):
 	model.to(device)
 
 	
-	files_dir = os.path.join(DATA_PATH, f'{cfg.features}_Vectors/')
+	files_dir = os.path.join(DATA_PATH, f'{cfg.features}_Vectors/{cfg.target_seconds}/')
 	if cfg.features=='RMS':
 		files_dir = os.path.join(files_dir, f'RMS_{cfg.resolution}_{cfg.n_channels}band')
 		if cfg.n_channels>1:
@@ -49,7 +49,7 @@ def main(cfg):
 								channels='all', min_snr=cfg.min_snr)
 
 	# split datasets
-	train_set, val_set, df_dataset = split_dataset(dataset, cfg)
+	train_set, val_set, test_set, df_dataset = split_dataset(dataset, cfg)
 	
 	# dataloader
 	train_loader = DataLoader(dataset=train_set, batch_size=cfg.model.batch_size, shuffle=True)

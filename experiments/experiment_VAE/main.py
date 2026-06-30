@@ -52,7 +52,7 @@ def main(cfg):
 								channels=[i for i in range(cfg_vae.model.latent_size)])
 
 	# split datasets
-	train_set, val_set, df_dataset = split_dataset(dataset, cfg)
+	train_set, val_set, test_set, df_dataset = split_dataset(dataset, cfg)
 	print(f"AE train sources were {cfg_vae.train_sources} and AE split was {cfg_vae.split}")
 
 
