@@ -44,7 +44,7 @@ def random_split_df(csv_path, proportions = [0.7, 0.15, 0.15], manual_seed=0):
 
 
 # TODO rethink this this needs to be in the class itself or something like that
-def split_sw_dataset(dataset:SpermWhaleDataset, cfg, split_proportions = [0.7, 0.15. 0.15]):
+def split_sw_dataset(dataset:SpermWhaleDataset, cfg, split_proportions = [0.7, 0.15, 0.15]):
 	"""Split SpermWhaleDataset into training and validation sets.
 
 	Args:
