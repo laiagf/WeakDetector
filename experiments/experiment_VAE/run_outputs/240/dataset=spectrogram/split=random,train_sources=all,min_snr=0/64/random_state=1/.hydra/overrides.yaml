@@ -1,4 +1,0 @@
-- dataset=spectrogram
-- latent_size=64
-- model.n_epochs=40
-- random_state=1
