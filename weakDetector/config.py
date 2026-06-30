@@ -1,5 +1,5 @@
 
-ROOT_DIR = '/mnt/spinning1/WeakDetector/'
+ROOT_DIR = '/home/laia/Projects/WeakDetector/'
 
 CODE_DIR = '/home/laia/Projects/WeakDetector/'
 

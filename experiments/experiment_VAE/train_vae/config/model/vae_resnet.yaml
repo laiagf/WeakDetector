@@ -1,6 +1,6 @@
 
 name: 'vae_resnet'
-latent_size: 32
+latent_size: 24
 parameters: 
   n_epochs: 600
   lr: 0.001

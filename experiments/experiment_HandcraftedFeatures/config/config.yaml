@@ -20,7 +20,7 @@ hydra:
 
 
 
-features: 'Spectral'
+features: 'RMS'
 
 n_channels: 5
 
@@ -48,7 +48,7 @@ model:
   name: tcn
   output_size: 2
   batch_size: 8
-  n_epochs: 40
+  n_epochs: 20
   n_hid: 12
   levels: 12
   kernel_size: 12

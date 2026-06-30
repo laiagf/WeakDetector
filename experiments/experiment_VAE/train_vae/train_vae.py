@@ -24,9 +24,8 @@ torch.manual_seed(0)
 
 
 
-@hydra.main(config_path=ROOT_DIR+"/experiments/experiment_VAE/train_vae/config", config_name="config.yaml",version_base=None)
+@hydra.main(config_path=ROOT_DIR+"/experiments/experiment_VAE/train_vae/config/", config_name="config.yaml",version_base=None)
 def main(cfg):
-
 	if torch.cuda.is_available():
 		device="cuda:0"
 	else:
@@ -44,12 +43,11 @@ def main(cfg):
 	print(f"training {cfg.model.name} on dataset {cfg.dataset} using scale method {scale_method} with latent space of dim {cfg.model.latent_size}. Using {scale_method} scaling method.")
 
 
-
 	dataset = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, scale_method=scale_method, sources=cfg.train_sources, min_snr=cfg.min_snr)
 
 
 	# Split dataset into training and validation files
-	train_set, val_set = split_dataset(dataset, cfg)
+	train_set, val_set, test_set = split_dataset(dataset, cfg)
 
 
 	train_loader = DataLoader(dataset=train_set, batch_size=cfg.model.parameters.batch_size, shuffle=True)
