@@ -1,0 +1,15 @@
+model:
+  name: vae_resnet
+  latent_size: 24
+  parameters:
+    n_epochs: 600
+    lr: 0.001
+    batch_size: 16
+csv_file: files/short_clips.csv
+train_sources: all
+min_snr: 0
+scale: normalise
+split: random
+random_state: 1
+dataset: spectrogram
+tensor_dir: /home/laia/AEdatasets/${.dataset}/

@@ -108,13 +108,13 @@ def split_sw_dataset(dataset:SpermWhaleDataset, cfg, split_proportions = [0.7, 0
 	return train_set, val_set, test_set, df_dataset
 
 
-def split_click_dataset(dataset:ClickDataset, cfg, proportions=[0.7, 0.15, 0.15]):
+def split_click_dataset(dataset:ClickDataset, cfg, split_proportions=[0.7, 0.15, 0.15]):
 	"""Split ClickDataset into training and validation sets.
 
 	Args:
 		dataset (ClickDataset): Dataset to split.
 		cfg (omegaconf.dictconfig.DictConfig): Config dictionary.
-		proportions (list, optional): Proportions of training, validation and test sets when randomly splitting. Defaults to [0.7, 0.15, 0.15].
+		split_proportions (list, optional): Proportions of training, validation and test sets when randomly splitting. Defaults to [0.7, 0.15, 0.15].
 
 	Raises:
 		ValueError: _description_
@@ -131,7 +131,7 @@ def split_click_dataset(dataset:ClickDataset, cfg, proportions=[0.7, 0.15, 0.15]
 	elif cfg.split=='by_source':
 		#split dataset into train and val, and then test_set comes from sources not in the dataset already
 
-		train_set_split = split_proportions[0]*len(dataset)
+		train_set_split = int(split_proportions[0]*len(dataset))
 		val_set_split = len(dataset)-train_set_split 
 		train_set, val_set = torch.utils.data.random_split(dataset, [train_set_split, val_set_split], generator=torch.Generator().manual_seed(cfg.random_state)) 		
 
@@ -140,7 +140,7 @@ def split_click_dataset(dataset:ClickDataset, cfg, proportions=[0.7, 0.15, 0.15]
 		print(f"There are {len(train_set)} samples in the training dataset / {len(val_set)} in the val_set (sources{cfg.train_sources}, and {len(test_set)} in the test set (sources {test_sources})")
 	
 	elif cfg.split=='by_tcn_4':
-		train_files, val_files, test_files = random_split_df('files/datasets/4mindataset.csv', proportions=proportions, manual_seed=cfg.random_state)
+		train_files, val_files, test_files = random_split_df('files/datasets/4mindataset.csv', proportions=split_proportions, manual_seed=cfg.random_state)
 		train_set =  ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=train_files)
 		val_set = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=val_files)
 		test_set = ClickDataset(cfg.dataset, cfg.csv_file, cfg.tensor_dir, sources=cfg.train_sources, split_files=test_files)
@@ -159,7 +159,7 @@ def split_click_dataset(dataset:ClickDataset, cfg, proportions=[0.7, 0.15, 0.15]
 	
 	return train_set, val_set, test_set
 
-def split_dataset(dataset, cfg, proportions=[0.7, 0.15, 0.15]):   
+def split_dataset(dataset, cfg, split_proportions=[0.7, 0.15, 0.15]):   
 	"""Split Dataset into training and validation sets.
 
 	Args:
@@ -174,8 +174,8 @@ def split_dataset(dataset, cfg, proportions=[0.7, 0.15, 0.15]):
 		tuple: _description_
 	"""
 	if isinstance(dataset, SpermWhaleDataset):
-		return split_sw_dataset(dataset, cfg, proportions)
+		return split_sw_dataset(dataset, cfg, split_proportions)
 	elif isinstance(dataset, ClickDataset):
-		return split_click_dataset(dataset, cfg, proportions)
+		return split_click_dataset(dataset, cfg, split_proportions)
 	else: 
 		raise TypeError(f'{type(dataset)} not valid for dataset to split.')

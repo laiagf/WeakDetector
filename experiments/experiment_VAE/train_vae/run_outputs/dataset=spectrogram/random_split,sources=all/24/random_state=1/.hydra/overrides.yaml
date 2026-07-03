@@ -1,0 +1,3 @@
+- train_sources=all
+- split=random
+- model.latent_size=24

@@ -26,7 +26,7 @@ split: random
 
 #train_sources: [AS,BAL_1,BAL_2,BAL_3,CAL,CS,ICE]
 train_sources: all
-dataset: spectral_profile
+dataset: spectrogram 
 
 standard: True
 
