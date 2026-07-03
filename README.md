@@ -3,9 +3,9 @@
 This is the repository for the paper **Temporal Feature Learning in Weakly Labelled Bioacoustic Cetacean Datasets via a Variational Autoencoder and Temporal Convolutional Network** (arXiv:2410.17006).
 
 ## Structure
-`weakDetector` includes all the necessary code for training and deploying both autoencoders and Temporal Convolutional Networks (TCN) that work on embeddings in the form of a python package.
+`weakDetector/` includes all the necessary code for training and deploying both autoencoders and Temporal Convolutional Networks (TCN) that work on embeddings in the form of a python package.
 
-`files/`: Contains CSV files with annotations for training and evaluation for the datasets used in our paper. Acompanying audio data is available on demand.
+`files/`: Contains CSV files with annotations for training, evaluation and testing for the datasets used in our paper. Acompanying audio data is available on demand.
 
 `experiments/`: Contains a practical implementation of the weakDetector module. As per our paper. this includes compressing 4-minute audio segments and classifying them based on the presence/absence of sperm whale click trains.
 
