@@ -1,0 +1,6 @@
+- model.batch_size=8
+- model.n_hid=10
+- model.levels=8
+- model.kernel_size=20
+- resolution=LR
+- n_channels=5
